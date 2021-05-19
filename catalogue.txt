@@ -1,0 +1,4 @@
+carciofi    12
+pomodori    10
+zucchine    2
+patate  4

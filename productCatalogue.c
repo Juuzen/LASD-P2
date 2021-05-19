@@ -22,7 +22,11 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename) {
         return NULL;
     }
 
+    //File opening
     FILE *productCatalogue = fopen(catalogueFilename, "r");
+
+    //Product catalogue declaration
+    PtrCatalogue tmp = NULL;
 
     // Sanity check on fileopen
     if (productCatalogue == NULL) {
@@ -36,15 +40,44 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename) {
 
         if (scannedElements == 2) {
             Item genericItem = createNewItem(localProductLabel, localSpecificWeight);
-            debugPrint(genericItem);
+            PtrCatalogue item = createNodeCatalogue(genericItem);
+            insertTail(tmp,item);
         }
     }
 
     fclose(productCatalogue);
 
-    return NULL;
+    return tmp;
 }
 
 void debugPrint(Item item) {
     printf("Printing item..\n\tLabel: %s\n\tSpecific weight: %d\n\n", item.itemLabel, item.specificWeight);
 }
+
+PtrCatalogue createNodeCatalogue(Item item)
+{
+    PtrCatalogue tmp = NULL;
+    tmp = (Catalogue*) malloc(sizeof(Catalogue));
+
+    tmp->item = item;
+    tmp->next = NULL;
+
+    return tmp;
+}
+
+PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list)
+{
+    if(list==NULL) return tmp;
+    list->next=insertTail(tmp,list->next);
+    return list;
+}
+
+void print(PtrCatalogue list)
+{
+    while(list->next==NULL)
+    {
+        debugPrint(list->item);
+        list = list->next;
+    }
+}
+

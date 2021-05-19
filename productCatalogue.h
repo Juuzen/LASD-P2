@@ -21,6 +21,9 @@ typedef struct Catalogue* PtrCatalogue;
 
 Item createNewItem(char *itemLabel, int specificWeight);
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename);
+PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list);
+void print(PtrCatalogue list);
+PtrCatalogue createNodeCatalogue(Item item);
 
 //DEBUG ONLY
 void debugPrint(Item item);
