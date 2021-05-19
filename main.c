@@ -3,7 +3,9 @@
 //
 
 #include <stdio.h>
+#include "productCatalogue.h"
 
 int main() {
+    retrieveItemsFromCatalogueFile("catalogue.txt");
     return 0;
 }

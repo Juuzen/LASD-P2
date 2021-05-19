@@ -22,4 +22,7 @@ typedef struct Catalogue* PtrCatalogue;
 Item createNewItem(char *itemLabel, int specificWeight);
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename);
 
+//DEBUG ONLY
+void debugPrint(Item item);
+
 #endif //LASD_P2_PRODUCTCATALOGUE_H
