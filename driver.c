@@ -6,6 +6,9 @@
 #include "stdlib.h"
 #include "driver.h"
 #include "string.h"
+#include "logger.h"
+
+#define METHOD_TEST "retrieveDriverInfoFromFile()"
 
 /*
  * NOTE: Driver is not returned from function but instead is returned by reference in the input parameter
@@ -18,7 +21,7 @@
  */
 int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver) {
     if (driver == NULL) {
-        fprintf(stderr, "ERROR: DRIVER IS NULL. I TOLD YOU, FOOL\n");
+        logMessage(METHOD_TEST, "DRIVER NOT INITIALIZED", 1);
         return -100;
     }
 
