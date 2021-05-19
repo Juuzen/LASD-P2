@@ -8,7 +8,7 @@
 #include "productCatalogue.h"
 
 
-Item createNewItem(char *itemLabel, int specificWeight) {
+Item createNewItem(char *itemLabel, int specificWeight){
     Item item;
     strcpy(item.itemLabel, itemLabel);
     item.specificWeight = specificWeight;
@@ -16,7 +16,7 @@ Item createNewItem(char *itemLabel, int specificWeight) {
 }
 
 //  In case of failure, should it return NULL or empty list?
-PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename) {
+PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
     // Sanity check on filename
     if (catalogueFilename == NULL) {
         return NULL;
@@ -41,10 +41,9 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename) {
         if (scannedElements == 2) {
             Item genericItem = createNewItem(localProductLabel, localSpecificWeight);
             PtrCatalogue item = createNodeCatalogue(genericItem);
-            insertTail(tmp,item);
+            tmp = insertTail(tmp,item);
         }
     }
-
     fclose(productCatalogue);
 
     return tmp;
@@ -54,27 +53,27 @@ void debugPrint(Item item) {
     printf("Printing item..\n\tLabel: %s\n\tSpecific weight: %d\n\n", item.itemLabel, item.specificWeight);
 }
 
-PtrCatalogue createNodeCatalogue(Item item)
-{
+PtrCatalogue createNodeCatalogue(Item item){
     PtrCatalogue tmp = NULL;
-    tmp = (Catalogue*) malloc(sizeof(Catalogue));
+    tmp = (Catalogue*)malloc(sizeof(Catalogue));
 
-    tmp->item = item;
-    tmp->next = NULL;
+    if(tmp!=NULL){
+        tmp->item = item;
+        tmp->next = NULL;
+    }
 
     return tmp;
 }
 
-PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list)
-{
+PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list){
     if(list==NULL) return tmp;
     list->next=insertTail(tmp,list->next);
     return list;
 }
 
-void print(PtrCatalogue list)
-{
-    while(list->next==NULL)
+void print(PtrCatalogue list){
+
+    while(list!=NULL)
     {
         debugPrint(list->item);
         list = list->next;
