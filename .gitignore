@@ -2,3 +2,4 @@ CMakeLists.txt
 .idea
 .vscode
 cmake-build-debug
+main.c
