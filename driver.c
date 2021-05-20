@@ -23,20 +23,20 @@
  */
 int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver) {
     if (driver == NULL) {
-        logMessage(METHOD_TEST, "DRIVER NOT INITIALIZED", 1);
+        logMessage(METHOD_TEST, LOG_LEVEL_ERROR, "DRIVER NOT INITIALIZED", 1);
         return -100;
     }
 
     // Sanity check on input
     if (driverCode == NULL || filename == NULL) {
-        fprintf(stderr, "retrieveDriverInfoFromFile() - other inputs null\n");
+        fprintf(stderr, LOG_LEVEL_ERROR, "retrieveDriverInfoFromFile() - other inputs null\n");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "r");
 
     if (driverDatabase == NULL) {
-        fprintf(stderr, "retrieveDriverInfoFromFile() - file opening null\n");
+        fprintf(stderr, LOG_LEVEL_ERROR, "retrieveDriverInfoFromFile() - file opening null\n");
         return -2;
     }
 
@@ -70,21 +70,21 @@ int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver)
  */
 int writeDriverInfoToFile(Driver driver, char *filename) {
     if (filename == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, "Filename is null", 0);
+        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Filename is null", 0);
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "a");
 
     if (driverDatabase == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, "Error opening file", 0);
+        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error opening file", 0);
         return -2;
     }
 
-    int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
+    int printFileResult = fprintf(driverDatabase, LOG_LEVEL_ERROR, "%s\t%d\n", driver.driverCode, driver.truckWeight);
 
     if (printFileResult < 0) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, "Error writing to file", 0);
+        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error writing to file", 0);
         return 0;
     }
 
