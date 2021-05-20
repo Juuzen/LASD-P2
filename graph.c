@@ -2,6 +2,57 @@
 #include <stdlib.h>
 #include "graph.h"
 
+/* FUNZIONI LISTE */
+void list_freeNode(List node) {
+    if (node != NULL) {
+        node->value = 0;
+        node->next = NULL;
+        free(node);
+    }
+}
+void list_freeList(List L) {
+    if (L != NULL) {
+        list_freeList(L->next);
+        list_freeNode(L);
+    }
+}
+List list_newNode(int value) {
+    List node = (List) calloc(1, (sizeof(list)));
+    if (node != NULL) {
+        node->value = value;
+        node->next = NULL;
+    }
+    return node;
+}
+List list_enqueue(List queue, int value) {
+    if (queue == NULL) return list_newNode(value);
+    queue->next = list_enqueue(queue->next, value);
+    return queue;
+}
+int list_dequeue(List* queue) {
+    if ((*queue) != NULL) {
+        List tmp = (*queue);
+        (*queue) = (*queue)->next;
+        int value = tmp->value;
+        list_freeNode(tmp);
+        return value;
+    }
+
+    else return -1;
+}
+bool list_findValue(List L, int key) {
+    if (L == NULL) return false;
+    if (L->value == key) return true;
+    return list_findValue(L->next, key);
+}
+void list_debugPrint(List L) {
+    if (L == NULL) printf("X\n");
+    else {
+        printf("%d -> ", L->value);
+        list_debugPrint(L->next);
+    }
+}
+
 /* FUNZIONI ARCHI */
 void edge_freeNode(Edge node) {
     if (node != NULL) {
@@ -42,6 +93,11 @@ Edge edge_tailInsert(Edge list, int source, int dest, int weight) {
 
     return list;
     }
+}
+Edge edge_headInsert(Edge list, int source, int dest, int weight) {
+    Edge E = edge_newNode(source, dest, weight);
+    if (E != NULL) E->next = list;
+    return E;
 }
 Edge edge_removeNode(Edge list, int source, int dest) {
     if (list == NULL) return NULL;
@@ -134,7 +190,123 @@ void graph_removeEdge(Graph G, bool ordered, int sourceIndex, int destIndex) {
         if (G->adjList[destIndex] != NULL)
             G->adjList[destIndex] = edge_removeNode(G->adjList[destIndex], destIndex, sourceIndex);
 }
+Edge graph_findShortestPath(Graph G, int startIndex, int endIndex, int truckWeight) {
+    if (G == NULL) return NULL;
 
+    /* Inizializzazione vettore predecessori */
+    int prev[G->nodeCount];
+    for (int i = 0; i < G->nodeCount; i++)
+        prev[i] = -1;
+    
+    List visitedNodes = NULL, nodeQueue = NULL;
+    bool pathFound = false;
+    /* Impostiamo il nodo corrente come il nodo di partenza */
+    int currentIndex = startIndex;
+    
+    /* Per ogni nodo corrente */
+    do {
+        /* Il nodo corrente viene considerato già visitato */
+        visitedNodes = list_enqueue(visitedNodes, currentIndex);
+
+        /* Prendiamo la lista di adiacenza del nodo corrente */
+        Edge adjList = G->adjList[currentIndex];
+
+        /* Fino a quando la lista di adiacenza del nodo corrente non è vuota */
+        while (!pathFound && adjList != NULL) {
+            /* Se l'arco è candidato ad essere messo in coda */
+            if (!list_findValue(nodeQueue, adjList->destIndex) && !list_findValue(visitedNodes, adjList->destIndex)) {
+                /* Se l'arco può sostenere il peso del camion */
+                if (adjList->weight > truckWeight) {
+                    /* Se l'arco punta alla destinazione */
+                    if (adjList->destIndex == endIndex) {
+                        /* Possiamo fermarci, ricostruiamo il percorso minimo */
+                        pathFound = true;
+                        prev[adjList->destIndex] = currentIndex;
+                        /* Usciamo dal while */
+                        break;
+                    }
+                    /* Altrimenti continuiamo a ciclare la lista di adiacenza */
+                    nodeQueue = list_enqueue(nodeQueue, adjList->destIndex);
+                    prev[adjList->destIndex] = currentIndex;
+                }
+            }
+            adjList = adjList->next;
+        }
+        
+        /* Se il percorso non è stato ancora individuato */
+        if (!pathFound) {
+            /* Il prossimo nodo corrente viene preso dalla coda */
+            currentIndex = list_dequeue(&nodeQueue);
+        }
+    /* Continua fin quando il percorso non è stato ancora individuato o vi sono ancora nodi nella coda */
+    } while(!pathFound && currentIndex != -1);
+
+    /* Libero le strutture ausiliarie */
+    list_freeList(visitedNodes);
+    list_freeList(nodeQueue);
+
+    /* Se il percorso è stato individuato */
+    if (pathFound) {
+        Edge path = NULL;
+        int source, dest = endIndex;
+        do {
+            source = prev[dest];
+            path = edge_headInsert(path, source, dest, 0);
+            dest = source;
+        } while (source != startIndex);
+        return path;
+    }
+
+    /* Altrimenti return NULL */
+    return NULL;
+}
+Graph graph_getSampleGraph() {
+    Graph G = graph_new();
+    graph_addNode(G); // A - 0
+    graph_addNode(G); // B - 1
+    graph_addNode(G); // C - 2
+    graph_addNode(G); // D - 3
+    graph_addNode(G); // E - 4
+    graph_addNode(G); // F - 5
+    graph_addNode(G); // G - 6
+    graph_addNode(G); // H - 7
+    graph_addNode(G); // I - 8
+    graph_addNode(G); // J - 9
+    graph_addNode(G); // K - 10
+    graph_addNode(G); // L - 11
+    graph_addNode(G); // M - 12
+
+    graph_addEdge(G, false, 0, 1, 100);   // A-B
+    graph_addEdge(G, false, 0, 4, 100);   // A-E
+    graph_addEdge(G, false, 0, 8, 100);   // A-I
+
+    graph_addEdge(G, false, 1, 4, 0);     // B-E
+    graph_addEdge(G, false, 1, 5, 100);   // B-F
+    graph_addEdge(G, false, 1, 8, 100);   // B-I
+
+    graph_addEdge(G, false, 2, 5, 0);     // C-F
+    graph_addEdge(G, false, 2, 12, 0);    // C-M
+    graph_addEdge(G, false, 2, 9, 100);   // C-J
+    graph_addEdge(G, false, 2, 6, 0);     // C-G
+
+    graph_addEdge(G, false, 3, 11, 100);  // D-L
+    graph_addEdge(G, false, 3, 9, 100);   // D-J
+    graph_addEdge(G, false, 3, 6, 100);   // D-G
+
+    graph_addEdge(G, false, 4, 7, 100);   // E-H
+
+    graph_addEdge(G, false, 5, 8, 0);     // F-I
+    graph_addEdge(G, false, 5, 9, 100);   // F-J
+    graph_addEdge(G, false, 5, 12, 100);  // F-M
+    
+    graph_addEdge(G, false, 6, 10, 100);  // G-K
+
+    graph_addEdge(G, false, 7, 8, 100);   // H-I
+
+    graph_addEdge(G, false, 10, 11, 100); // K-L
+    
+    return G;
+}
 void graph_debugPrint(Graph G) {
     if (G != NULL) {
         for (int i = 0; i < G->nodeCount; i++) {
