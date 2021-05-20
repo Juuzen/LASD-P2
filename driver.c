@@ -9,6 +9,7 @@
 #include "logger.h"
 
 #define METHOD_TEST "retrieveDriverInfoFromFile()"
+#define WRITE_DRIVER_FILE_METHOD "writeDriverInfoToFile()"
 
 /*
  * NOTE: Driver is not returned from function but instead is returned by reference in the input parameter
@@ -16,6 +17,7 @@
  *
  * Error codes:
  *      -100    DRIVER NOT INITIALIZED
+ *      -2  Error in file opening
  *      -1  Input null
  *      0   Driver not registered
  */
@@ -35,6 +37,7 @@ int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver)
 
     if (driverDatabase == NULL) {
         fprintf(stderr, "retrieveDriverInfoFromFile() - file opening null\n");
+        return -2;
     }
 
     int foundDriver = 0;
@@ -57,4 +60,35 @@ int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver)
     fclose(driverDatabase);
 
     return foundDriver;
+}
+
+/* Error codes:
+ *      -2  Error in file opening
+ *      -1  Filename null
+ *       0  Error writing to file
+ *       1  Success
+ */
+int writeDriverInfoToFile(Driver driver, char *filename) {
+    if (filename == NULL) {
+        logMessage(WRITE_DRIVER_FILE_METHOD, "Filename is null", 0);
+        return -1;
+    }
+
+    FILE *driverDatabase = fopen(filename, "a");
+
+    if (driverDatabase == NULL) {
+        logMessage(WRITE_DRIVER_FILE_METHOD, "Error opening file", 0);
+        return -2;
+    }
+
+    int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
+
+    if (printFileResult < 0) {
+        logMessage(WRITE_DRIVER_FILE_METHOD, "Error writing to file", 0);
+        return 0;
+    }
+
+    fclose(driverDatabase);
+
+    return 1;
 }

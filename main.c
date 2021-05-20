@@ -4,6 +4,8 @@
 #include "logger.h"
 
 int main() {
-    retrieveDriverInfoFromFile("A12", "test", NULL);
+    Driver driver;
+    int foundDriver = retrieveDriverInfoFromFile("A12", "driverdb.txt", &driver);
+    printf("%d\n", foundDriver);
     return 0;
 }
