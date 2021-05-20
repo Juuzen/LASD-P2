@@ -3,3 +3,5 @@ CMakeLists.txt
 .vscode
 cmake-build-debug
 main
+
+main.c
