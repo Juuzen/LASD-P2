@@ -13,6 +13,6 @@ typedef struct Driver {
 } Driver;
 
 int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver);    //Retrieves stored informations for driver
-int writeDriverInfoToFile(Driver driver);   // Stores information after registration to be used after signup in authlib.c
+int writeDriverInfoToFile(Driver driver, char *filename);   // Stores information after registration to be used after signup in authlib.c
 
 #endif //LASD_P2_DRIVER_H

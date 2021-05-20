@@ -4,6 +4,5 @@
 #include "logger.h"
 
 int main() {
-    retrieveDriverInfoFromFile("A12", "test", NULL);
     return 0;
 }
