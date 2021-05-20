@@ -2,4 +2,9 @@ CMakeLists.txt
 .idea
 .vscode
 cmake-build-debug
+<<<<<<< HEAD
+main
+
+=======
+>>>>>>> graph
 main.c
