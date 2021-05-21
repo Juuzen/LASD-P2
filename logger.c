@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "time.h"
 #include "string.h"
+#include "const.h"
 
 void logMessage(char *method, char *logLevel, char *message, int writeOnFile) {
     FILE *logFile = NULL;
