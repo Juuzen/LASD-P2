@@ -5,6 +5,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "authlib.h"
+#include "const.h"
 
 /*
  *  MAX_SIZE_USERNAME e MAX_SIZE_PASSWORD vengono usati + 1 per accomodare il carattere di terminazione '\0'
