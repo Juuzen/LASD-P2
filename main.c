@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "productCatalogue.h"
-#include "driver.h"
-#include "logger.h"
+#include "project.h"
+
 
 int main() {
+    projectRun();
     return 0;
 }

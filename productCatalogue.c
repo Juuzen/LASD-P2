@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "productCatalogue.h"
+#include "const.h"
 
 
 Item createNewItem(char *itemLabel, int specificWeight){

@@ -2,14 +2,18 @@
 // Created by backs on 20/05/2021.
 //
 
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "orderManagement.h"
 
 PtrOrder createNewOrder(Item item, int quantity) {
-    PtrOrder order;
-    order->item = item;
-    order->quantity = quantity;
-    order->next = NULL;
+    PtrOrder order = (PtrOrder) calloc(1, sizeof(Order));
+    if (order != NULL) {
+        order->item = item;
+        order->quantity = quantity;
+        order->next = NULL;
+    }
+
     return order;
 }
 

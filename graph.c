@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "graph.h"
+#include "const.h"
 
 /* FUNZIONI LISTE */
 void list_freeNode(List node) {
@@ -116,7 +117,6 @@ Edge edge_findNode(Edge list, int source, int dest) {
         return list;
     return edge_findNode(list->next, source, dest);
 }
-
 void edge_debugPrintNode(Edge node) {
     if (node != NULL) 
         printf("%d -> %d (W: %d)\n", node->sourceIndex, node->destIndex, node->weight);
