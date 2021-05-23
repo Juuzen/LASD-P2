@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "driver.h"
 #include "authlib.h"
 #include "productCatalogue.h"
 
@@ -19,7 +20,9 @@
  *       1  Login successful
  *       2  Wrong password
  */
+
 int doLogin(char *username, char *password, char *filename) {
+
     FILE *loginFile = NULL;
     int resultCheck = 0;    //Stores result of check for login, base case for not found username
 
@@ -56,8 +59,8 @@ int doLogin(char *username, char *password, char *filename) {
     return resultCheck;
 }
 
-int doRegistration(char *username, char *password, char *peso, char *filename) {
-    if (username == NULL || password == NULL || peso == NULL || filename == NULL) {
+int doRegistration(char *username, char *password, int peso, char *filename) {
+    if (username == NULL || password == NULL || peso == 0 || filename == NULL) {
         return -1;
     }
 
@@ -74,7 +77,7 @@ int doRegistration(char *username, char *password, char *peso, char *filename) {
         return -1;
     }
 
-    fprintf(registrationFile, "%s\t%s\t%s\n", username, password, peso);
+    fprintf(registrationFile, "%s\t%s\t%d\n", username, password, peso);
 
     fclose(registrationFile);
 
@@ -83,6 +86,7 @@ int doRegistration(char *username, char *password, char *peso, char *filename) {
 
 //  Returns 1 if username already exists, 0 otherwise
 int checkIfUsernameAlreadyExists(char *username, char *filename) {
+
     FILE *registrationFile = NULL;
 
     if (filename == NULL || username == NULL) {
@@ -98,8 +102,8 @@ int checkIfUsernameAlreadyExists(char *username, char *filename) {
     int foundUsername = 0;
 
     while (feof(registrationFile) == 0 && foundUsername == 0) {
-        char scannedUsername[10];
-        char scannedPassword[10];
+        char scannedUsername[20];
+        char scannedPassword[20];
         int scannedElements = fscanf(registrationFile, "%s\t%s\n", scannedUsername, scannedPassword);
 
         if (scannedElements == 2) {
@@ -112,73 +116,4 @@ int checkIfUsernameAlreadyExists(char *username, char *filename) {
     fclose(registrationFile);
 
     return foundUsername;
-}
-
-void mainMenu() {
-
-    char username[20];
-    char password[20];
-    FILE *fp = NULL;
-    int check;
-    char peso[10];
-    char selection;
-    int selection2;
-
-    printf("Benvenuto, selezionare il servizio richiesto\n1 per autentificazione\n2 per registrazione\nPremere qualsiasi tasto per uscire...\n");
-    scanf("%c", &selection);
-
-    switch (selection) {
-        case '1':
-            // open autentication
-            printf("Inserisci username:\n");
-            scanf("%s", username);
-            printf("\nInserisci password:\n");
-            scanf("%s", password);
-
-            check = doLogin(username, password, "registrazione.txt");
-
-            if (check != 1) {
-                printf("Autentificazione fallita\nPrego riprovare");
-
-            } else {
-                printf("\nBenvenuto %s!\nSelezionare il servizio richiesto\n1 per visualizzare l'elenco dei prodotti disponibili\n2 per boh\nPremere qualsiasi tasto per uscire\n",
-                       username);
-                scanf("%d", &selection2);
-
-                while (selection2 < 0 || selection2 > 2) {
-                    printf("\nSelezione non valida!\n");
-                    scanf("%d", &selection2);
-                }
-
-                if (selection == '1') {
-
-                    openShopList();
-                    printf("\n");
-
-                    break;
-
-                    case '2':
-                        // Open registration section
-                        printf("Inserisci username:\n");
-                    scanf("%s", username);
-                    printf("\nInserisci password:\n");
-                    scanf("%s", password);
-                    printf("Inserisci il peso del tuo veicolo per le consegne:\n");
-                    scanf("%s", peso);
-
-
-                    doRegistration(username, password, peso, "registrazione.txt");
-                    fclose(fp);
-
-                    printf("\nGrazie, la sua registrazione e' stata effettuata con successo\nOra puo' accedere al suo account\n");
-                    break;
-
-                    default:
-                        printf("Arrivederci\n");
-                    system("PAUSE");
-                    exit(0);
-                }
-
-            }
-    }
 }

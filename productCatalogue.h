@@ -9,6 +9,7 @@
 
 typedef struct Item {
     char itemLabel[MAX_ITEM_LABEL_SIZE];    //takes in account already the + 1
+    int codProduct;
     int specificWeight;
 } Item;
 
@@ -19,11 +20,12 @@ typedef struct Catalogue {
 
 typedef struct Catalogue* PtrCatalogue;
 
-Item createNewItem(char *itemLabel, int specificWeight);
+Item createNewItem(char *itemLabel, int specificWeight, int codProduct);
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename);
 PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list);
 void print(PtrCatalogue list);
 PtrCatalogue createNodeCatalogue(Item item);
+void openShopList();
 
 //DEBUG ONLY
 void debugPrint(Item item);

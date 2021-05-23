@@ -8,10 +8,11 @@
 #include "productCatalogue.h"
 
 
-Item createNewItem(char *itemLabel, int specificWeight){
+Item createNewItem(char *itemLabel, int specificWeight, int codProduct){
     Item item;
     strcpy(item.itemLabel, itemLabel);
     item.specificWeight = specificWeight;
+    item.codProduct = codProduct;
     return item;
 }
 
@@ -35,11 +36,11 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
 
     while (feof(productCatalogue) == 0)  {
         char localProductLabel[MAX_ITEM_LABEL_SIZE];
-        int localSpecificWeight;
-        int scannedElements = fscanf(productCatalogue, "%s\t%d\n", localProductLabel, &localSpecificWeight);
+        int localSpecificWeight, localProductCode;
+        int scannedElements = fscanf(productCatalogue, "%d\t%s\t%d\n", &localProductCode, localProductLabel, &localSpecificWeight);
 
-        if (scannedElements == 2) {
-            Item genericItem = createNewItem(localProductLabel, localSpecificWeight);
+        if (scannedElements == 3) {
+            Item genericItem = createNewItem(localProductLabel, localSpecificWeight, localProductCode);
             PtrCatalogue item = createNodeCatalogue(genericItem);
             tmp = insertTail(tmp,item);
         }
@@ -50,10 +51,11 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
 }
 
 void debugPrint(Item item) {
-    printf("Printing item..\n\tLabel: %s\n\tSpecific weight: %d\n\n", item.itemLabel, item.specificWeight);
+    printf("\n\tCode:%d\n\tLabel: %s\n\tSpecific weight: %d\n", item.codProduct, item.itemLabel, item.specificWeight);
 }
 
 PtrCatalogue createNodeCatalogue(Item item){
+
     PtrCatalogue tmp = NULL;
     tmp = (Catalogue*)malloc(sizeof(Catalogue));
 
@@ -73,10 +75,18 @@ PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list){
 
 void print(PtrCatalogue list){
 
-    while(list!=NULL)
-    {
+    printf("Product List...\n");
+    while(list!=NULL){
         debugPrint(list->item);
         list = list->next;
     }
+}
+
+void openShopList(){
+
+    PtrCatalogue catalogue = NULL;
+    catalogue = retrieveItemsFromCatalogueFile("catalogue.txt");
+
+    print(catalogue);
 }
 
