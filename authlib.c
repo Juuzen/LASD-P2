@@ -4,7 +4,9 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "driver.h"
 #include "authlib.h"
+#include "productCatalogue.h"
 
 /*
  *  MAX_SIZE_USERNAME e MAX_SIZE_PASSWORD vengono usati + 1 per accomodare il carattere di terminazione '\0'
@@ -18,7 +20,9 @@
  *       1  Login successful
  *       2  Wrong password
  */
+
 int doLogin(char *username, char *password, char *filename) {
+
     FILE *loginFile = NULL;
     int resultCheck = 0;    //Stores result of check for login, base case for not found username
 
@@ -55,8 +59,8 @@ int doLogin(char *username, char *password, char *filename) {
     return resultCheck;
 }
 
-int doRegistration(char *username, char *password, char *filename) {
-    if (username == NULL || password == NULL || filename == NULL) {
+int doRegistration(char *username, char *password, int peso, char *filename) {
+    if (username == NULL || password == NULL || peso == 0 || filename == NULL) {
         return -1;
     }
 
@@ -73,7 +77,7 @@ int doRegistration(char *username, char *password, char *filename) {
         return -1;
     }
 
-    fprintf(registrationFile, "%s\t%s\n", username, password);
+    fprintf(registrationFile, "%s\t%s\t%d\n", username, password, peso);
 
     fclose(registrationFile);
 
@@ -82,6 +86,7 @@ int doRegistration(char *username, char *password, char *filename) {
 
 //  Returns 1 if username already exists, 0 otherwise
 int checkIfUsernameAlreadyExists(char *username, char *filename) {
+
     FILE *registrationFile = NULL;
 
     if (filename == NULL || username == NULL) {
@@ -97,8 +102,8 @@ int checkIfUsernameAlreadyExists(char *username, char *filename) {
     int foundUsername = 0;
 
     while (feof(registrationFile) == 0 && foundUsername == 0) {
-        char scannedUsername[10];
-        char scannedPassword[10];
+        char scannedUsername[20];
+        char scannedPassword[20];
         int scannedElements = fscanf(registrationFile, "%s\t%s\n", scannedUsername, scannedPassword);
 
         if (scannedElements == 2) {

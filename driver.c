@@ -21,7 +21,7 @@
  *      -1  Input null
  *      0   Driver not registered
  */
-int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver) {
+int retrieveDriverInfoFromFile(char driverCode, char *filename, Driver *driver) {
     if (driver == NULL) {
         logMessage(METHOD_TEST, LOG_LEVEL_ERROR, "DRIVER NOT INITIALIZED", 1);
         return -100;
