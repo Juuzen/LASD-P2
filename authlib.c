@@ -59,6 +59,12 @@ int doLogin(char *username, char *password, char *filename) {
     return resultCheck;
 }
 
+/*
+ * Error codes:
+ *      -1  File inesistente
+ *      -2  Input non validi
+ *       1  Registrazione successful
+ */
 int doRegistration(char *username, char *password, char *filename) {
     if (username == NULL || password == NULL || filename == NULL) {
         return -1;
@@ -81,7 +87,7 @@ int doRegistration(char *username, char *password, char *filename) {
 
     fclose(registrationFile);
 
-    return 0;
+    return 1;
 }
 
 //  Returns 1 if username already exists, 0 otherwise
