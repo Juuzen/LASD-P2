@@ -68,33 +68,3 @@ PtrCatalogue findElement(PtrCatalogue catalogue,int code)
     return find;
 
 }
-
-PtrOrder addToCart(PtrCatalogue catalogue){
-
-    int productCode;
-    int quantity;
-
-    printf("\nInserisci il codice del prodotto desiderato:\n");
-    scanf("%d",&productCode);
-
-
-    while(productCode<111 || productCode>121){
-        printf("\nProdotto non disponibile\n");
-        printf("\nInserisci il codice del prodotto desiderato:\n");
-        scanf("%d",&productCode);
-    }
-
-    printf("\nIn che quantita'?\n");
-    scanf("%d",&quantity);
-
-    PtrCatalogue find = NULL;
-    find = findElement(catalogue,productCode);
-
-    PtrOrder singleElement = NULL;
-    singleElement = createNewOrder(find->item,quantity);
-
-    return singleElement;
-
-}
-
-

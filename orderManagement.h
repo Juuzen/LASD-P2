@@ -20,6 +20,5 @@ PtrOrder insertOrderOnEnd(PtrOrder head, PtrOrder order);
 int calculateOrderWeight(PtrOrder orderList);
 void printOrderList(PtrOrder orderList);
 PtrCatalogue findElement(PtrCatalogue catalogue,int code);
-PtrOrder addToCart(PtrCatalogue catalogue);
 
 #endif //LASD_P2_ORDERMANAGEMENT_H
