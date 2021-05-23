@@ -59,8 +59,8 @@ int doLogin(char *username, char *password, char *filename) {
     return resultCheck;
 }
 
-int doRegistration(char *username, char *password, int peso, char *filename) {
-    if (username == NULL || password == NULL || peso == 0 || filename == NULL) {
+int doRegistration(char *username, char *password, char *filename) {
+    if (username == NULL || password == NULL || filename == NULL) {
         return -1;
     }
 
@@ -77,7 +77,7 @@ int doRegistration(char *username, char *password, int peso, char *filename) {
         return -1;
     }
 
-    fprintf(registrationFile, "%s\t%s\t%d\n", username, password, peso);
+    fprintf(registrationFile, "%s\t%s\n", username, password);
 
     fclose(registrationFile);
 

@@ -34,7 +34,7 @@ void mainMenu() {
             printf("\nInserisci password:\n");
             scanf("%s", password);
 
-            check = doLogin(username, password, "registrazione.txt");
+            check = doLogin(username, password, DRIVER_LOGIN_DB);
 
             if (check != 1) {
                 printf("Autentificazione fallita\nPrego riprovare");
@@ -105,7 +105,7 @@ void mainMenu() {
                     printf("Inserisci il peso del tuo veicolo per le consegne:\n");
                     scanf("%d", &peso);
 
-                    doRegistration(username, password, peso, "registrazione.txt");
+                    doRegistration(username, password, DRIVER_INFO_DB);
 
                     Driver driver;
                     strcpy(driver.driverCode,username);
