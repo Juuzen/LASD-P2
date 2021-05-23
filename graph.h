@@ -1,7 +1,7 @@
 #ifndef graph_h
 #define graph_h
 #include <stdbool.h>
-#define NODELIMIT 20
+
 
 typedef struct list {
     int value;

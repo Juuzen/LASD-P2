@@ -4,8 +4,8 @@
 
 #ifndef LASD_P2_PRODUCTCATALOGUE_H
 #define LASD_P2_PRODUCTCATALOGUE_H
+#include "const.h"
 
-#define MAX_ITEM_LABEL_SIZE 21
 
 typedef struct Item {
     char itemLabel[MAX_ITEM_LABEL_SIZE];    //takes in account already the + 1

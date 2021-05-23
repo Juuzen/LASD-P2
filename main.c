@@ -1,13 +1,8 @@
 #include <stdio.h>
-#include "productCatalogue.h"
-#include "driver.h"
-#include "logger.h"
-#include "UI.h"
-#include "authlib.h"
+#include "project.h"
 
-int main(){
 
-    mainMenu();
-
+int main() {
+    projectRun();
     return 0;
 }

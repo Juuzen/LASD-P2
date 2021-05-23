@@ -7,9 +7,9 @@
 #include "driver.h"
 #include "string.h"
 #include "logger.h"
+#include "const.h"
 
-#define METHOD_TEST "retrieveDriverInfoFromFile()"
-#define WRITE_DRIVER_FILE_METHOD "writeDriverInfoToFile()"
+
 
 /*
  * NOTE: Driver is not returned from function but instead is returned by reference in the input parameter
@@ -29,14 +29,16 @@ int retrieveDriverInfoFromFile(char driverCode, char *filename, Driver *driver) 
 
     // Sanity check on input
     if (driverCode == NULL || filename == NULL) {
-        fprintf(stderr, LOG_LEVEL_ERROR, "retrieveDriverInfoFromFile() - other inputs null\n");
+        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
+        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - other inputs null\n");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "r");
 
     if (driverDatabase == NULL) {
-        fprintf(stderr, LOG_LEVEL_ERROR, "retrieveDriverInfoFromFile() - file opening null\n");
+        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
+        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - file opening null\n");
         return -2;
     }
 
@@ -81,7 +83,8 @@ int writeDriverInfoToFile(Driver driver, char *filename) {
         return -2;
     }
 
-    int printFileResult = fprintf(driverDatabase, LOG_LEVEL_ERROR, "%s\t%d\n", driver.driverCode, driver.truckWeight);
+    //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
+    int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
 
     if (printFileResult < 0) {
         logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error writing to file", 0);

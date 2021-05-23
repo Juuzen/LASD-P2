@@ -5,12 +5,6 @@
 #ifndef LASD_P2_LOGGER_H
 #define LASD_P2_LOGGER_H
 
-#define LOG_FILE "lasdp.log"
-
-#define LOG_LEVEL_INFO "INFO"
-#define LOG_LEVEL_DEBUG "DEBUG"
-#define LOG_LEVEL_ERROR "ERROR"
-
 /*
  * USAGE GUIDE:
  *      Theoretically, every header should have a definition in the style of
