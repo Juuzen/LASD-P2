@@ -9,4 +9,6 @@ main
 >>>>>>> graph
 main.c
 
+unit-test.c
+
 *.txt
