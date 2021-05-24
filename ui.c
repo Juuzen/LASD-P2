@@ -100,12 +100,12 @@ void authenticationMenu() {
 /* Menu di registrazione */
 void registrationMenu() {
     int weight, registrationCheck, userChoice;
+    char username[MAX_SIZE_USERNAME];
+    char password[MAX_SIZE_PASSWORD];
     bool running = true;
 
     do {
         clearScreen();
-        char username[MAX_SIZE_USERNAME];
-        char password[MAX_SIZE_PASSWORD];
         printf("Inserisci username:\n");
         scanf("%s", username); // TODO: Input pulito
         printf("Inserisci password:\n");
