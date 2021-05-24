@@ -8,44 +8,101 @@
 #include "driver.h"
 #include "productCatalogue.h"
 #include "orderManagement.h"
+#include "utils.h"
 
+/* Entry point del progetto */
 void mainMenu() {
-    int userChoice = -1;
+    int userChoice;
+    bool running = true;
 
     do {
-        //TODO: Pulizia schermo
+        clearScreen();
         printf("Benvenuto, selezionare il servizio richiesto:\n");
         printf("1. AUTENTICAZIONE\n");
         printf("2. REGISTRAZIONE\n");
         printf("3. USCITA DAL PROGRAMMA\n\n");
         printf("La tua scelta: ");
-        scanf("%i", &userChoice); //TODO: input pulito
+        userChoice = getInt(3);
 
         switch (userChoice) {
-        case 1:
+        case 1: // autenticazione
             authenticationMenu();
             break;
         
-        case 2:
+        case 2: // registrazione
             registrationMenu();
             break;
         
-        case 3:
+        case 3: // uscita dal programma
             printf("Ok ciao arrivederci\n");
+            running = false;
+            programPause();
             break;
 
-        default:
+        default: // errore
+            //TODO: chiamare logger
             printf("Scelta non corretta! Riprovare\n");
+            programPause();
         }
-    } while (userChoice == -1);
+    } while (running);
     
 }
 
+/* Menu di autenticazione*/
+void authenticationMenu() {
+    int loginCheck, userChoice;
+    bool running = true;
+
+    char username[MAX_SIZE_USERNAME];
+    char password[MAX_SIZE_PASSWORD];
+
+    do {
+        clearScreen();
+        printf("Inserisci username:\n");
+        scanf("%s", username); //TODO: Input pulito
+        printf("\nInserisci password:\n");
+        scanf("%s", password); //TODO: Input pulito
+
+        loginCheck = doLogin(username, password, DRIVER_LOGIN_DB);
+
+        if (loginCheck == 1) {
+            Driver driver;
+            int driverCheck = retrieveDriverInfoFromFile(username, DRIVER_INFO_DB, &driver);
+            if (driverCheck == 1) {
+                driverMenu(driver);
+            }
+            else {
+                printf("Non e' stato possibile recuperare le informazioni del driver, riprovare piu' tardi...\n");
+                //TODO: Chiamare logger
+                
+            }
+            running = false; // Per evitare che venga ripetuta l'autenticazione dopo essere usciti
+        } else { 
+            printf("Le credenziali sono errate! Seleziona una opzione:\n");
+            printf("1. RIPETERE L'AUTENTICAZIONE\n");
+            printf("2. TORNA INDIETRO\n\n");
+            printf("La tua scelta: ");
+            userChoice = getInt(2);
+            switch (userChoice){
+            case 1: // Non è necessario fare nulla nel caso si voglia ripetere con l'autenticazione
+                break;
+            
+            default:
+                //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                running = false;
+                break;
+            }
+        }
+    } while (running);
+}
+
+/* Menu di registrazione */
 void registrationMenu() {
-    int weight, registrationCheck;
+    int weight, registrationCheck, userChoice;
     bool running = true;
 
     do {
+        clearScreen();
         char username[MAX_SIZE_USERNAME];
         char password[MAX_SIZE_PASSWORD];
         printf("Inserisci username:\n");
@@ -57,9 +114,21 @@ void registrationMenu() {
         switch (registrationCheck) {
             case -2:
                 //TODO: Aggiungere logger
-                printf("L'username e' gia' presente nel sistema! Riprovare con un nuovo username?\n");
-                //TODO: Chiedere se vuole riprovare
-                //TODO: Funzione di pausa
+                printf("L'username e' gia' presente nel sistema!\n");
+                printf("Selezionare una opzione:\n");
+                printf("1. RIPETERE LA REGISTRAZIONE\n");
+                printf("2. TORNA INDIETRO\n\n");
+                printf("La tua scelta: ");
+                userChoice = getInt(2);
+                switch (userChoice) {
+                case 1: // Non è necessario fare nulla nel caso si voglia ripetere con l'autenticazione
+                    break;
+                
+                default:
+                    //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                    running = false;
+                    break;
+                }
                 break;
             
             // Problema di accesso ai file interni
@@ -75,6 +144,7 @@ void registrationMenu() {
                 printf("Inserisci il peso del tuo veicolo per le consegne:\n");
                 scanf("%d", &weight); //TODO: Input pulito
 
+                //TODO: Questa struct driver è un po' ridondante, rimuoverla?
                 Driver driver;
                 strcpy(driver.driverCode, username);
                 driver.truckWeight = weight;
@@ -92,44 +162,44 @@ void registrationMenu() {
     } while (running);
 }
 
-PtrOrder addToCart(PtrCatalogue catalogue){
+/* Menu personale del driver */
+void driverMenu(Driver driver) {
+    int userChoice;
+    bool running = true; 
 
-    int productCode;
-    int quantity;
+    do {
+        clearScreen();
+        printf("Benvenuto, driver %s!\n", driver.driverCode);
+        printf("Seleziona il servizio che vuoi richiedere:\n");
+        printf("1. EFFETTUARE LA SPESA\n");
+        printf("2. EFFETTUARE UNA CONSEGNA\n");
+        printf("3. EFFETTUARE LOGOUT\n\n");
+        printf("La tua scelta: ");
+        userChoice = getInt(3);
 
-    printf("\nInserisci il codice del prodotto desiderato:\n");
-    scanf("%d",&productCode);
+        switch (userChoice){
+        case 1:
+            driverShopMenu(driver);
+            break;
+        
+        case 2:
+            driverDeliveryMenu(driver);
+            break;
+        
+        case 3:
+            printf("Grazie mille arrivederci\n"); //TODO: Abbellire il testo
+            running = false;
+            break;
 
-
-    while(productCode<111 || productCode>121){
-        printf("\nProdotto non disponibile\n");
-        printf("\nInserisci il codice del prodotto desiderato:\n");
-        scanf("%d",&productCode);
-    }
-
-    printf("\nIn che quantita'?\n");
-    scanf("%d",&quantity);
-
-    PtrCatalogue find = NULL;
-    find = findElement(catalogue,productCode);
-
-    PtrOrder singleElement = NULL;
-    singleElement = createNewOrder(find->item,quantity);
-
-    return singleElement;
-
+        default:
+            printf("Scelta sbagliata! Riprovare\n"); //TODO: Abbellire il testo
+            programPause();
+            //TODO: chiamare logger
+        }
+    } while (running);
 }
 
-void showCartInfo(Driver driver, PtrOrder cart) {
-    printf("\n*** RIEPILOGO ORDINI ***\n\n");
-    printOrderList(cart);
-    printf("\n*** PESO TOTALE ORDINE ***\n");
-
-    int cartWeight = calculateOrderWeight(cart);
-    printf("\npeso netto : %d", cartWeight);
-    printf("\npeso lordo : %d", cartWeight + driver.truckWeight);
-}
-
+/* Menu di gestione del carrello */
 void driverShopMenu(Driver driver) {
     bool running = true;
     int userChoice = -1;
@@ -197,82 +267,47 @@ void driverShopMenu(Driver driver) {
     } while (running);
 }
 
-//TODO: da fare
-void driverDeliveryMenu() {
+/* Funzione di supporto per aggiungere un prodotto al carrello */
+PtrOrder addToCart(PtrCatalogue catalogue) {
 
-}
+    int productCode;
+    int quantity;
 
-void driverMenu(Driver driver) {
-    int userChoice = -1;
-    do {
-        //TODO: Pulizia schermo
-        printf("Benvenuto, driver %s!\n", driver.driverCode);
-        printf("Seleziona il servizio che vuoi richiedere:\n");
-        printf("1. EFFETTUARE LA SPESA\n");
-        printf("2. EFFETTUARE UNA CONSEGNA\n");
-        printf("3. EFFETTUARE LOGOUT\n\n");
-        printf("La tua scelta: ");
-        scanf("%d", &userChoice); // TODO: Input pulito
-
-        switch (userChoice){
-        case 1:
-            driverShopMenu(driver);
-            break;
-        
-        case 2:
-            driverDeliveryMenu();
-            break;
-        
-        case 3:
-            printf("Grazie mille arrivederci\n");
-            break;
-
-        default:
-            printf("Scelta sbagliata! Riprovare\n");
-            userChoice = -1; //TODO: rimuovere questa patchaid
-        }
-    } while (userChoice == -1);
-}
-
-void authenticationMenu() {
-    int loginCheck;
-    bool running = true;
-    char username[MAX_SIZE_USERNAME];
-    char password[MAX_SIZE_PASSWORD];
-
-    do {
-        printf("Inserisci username:\n");
-        scanf("%s", username); //TODO: Input pulito
-        printf("\nInserisci password:\n");
-        scanf("%s", password); //TODO: Input pulito
-
-        loginCheck = doLogin(username, password, DRIVER_LOGIN_DB);
-
-        if (loginCheck == 1) {
-            Driver driver; //FIXME: sostituire con il recupero dei dati del driver
-            driverMenu(driver);
-        } else { 
-            printf("Le credenziali sono errate! Prego riprovare...\n");
-            //TODO: Chiedere se voler uscire oppure no
-            //TODO: Funzione di pausa
-        }
-    } while (running);
-}
+    printf("\nInserisci il codice del prodotto desiderato:\n");
+    scanf("%d",&productCode);
 
 
-// le informazioni del driver non dovrebbero già essere disponibili?
-/*
-int recoverTruckWeight(char *username){
-    char localFetchUsername[MAX_ITEM_LABEL_SIZE];
-    int localFetchTruckWeight;
-    FILE *fp = fopen("driverDB.txt","r");
-
-    int fScanfResult = fscanf(fp, "%s\t%d\n", localFetchUsername, &localFetchTruckWeight);
-    if (fScanfResult == 2) {
-        int usernameResultCheck = strcasecmp(username, localFetchUsername);
-        if (usernameResultCheck == 0) {
-            return localFetchTruckWeight;
-        }
+    while(productCode<111 || productCode>121){
+        printf("\nProdotto non disponibile\n");
+        printf("\nInserisci il codice del prodotto desiderato:\n");
+        scanf("%d",&productCode);
     }
+
+    printf("\nIn che quantita'?\n");
+    scanf("%d",&quantity);
+
+    PtrCatalogue find = NULL;
+    find = findElement(catalogue,productCode);
+
+    PtrOrder singleElement = NULL;
+    singleElement = createNewOrder(find->item,quantity);
+
+    return singleElement;
+
 }
-*/
+
+/* Funzione di supporto per mostrare il carrello */
+void showCartInfo(Driver driver, PtrOrder cart) {
+    printf("\n*** RIEPILOGO ORDINI ***\n\n");
+    printOrderList(cart);
+    printf("\n*** PESO TOTALE ORDINE ***\n");
+
+    int cartWeight = calculateOrderWeight(cart);
+    printf("\npeso netto : %d", cartWeight);
+    printf("\npeso lordo : %d", cartWeight + driver.truckWeight);
+}
+
+/* Menu di gestione delle consegne */
+void driverDeliveryMenu(Driver driver) {
+    //TODO: da fare
+}
