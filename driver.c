@@ -95,3 +95,8 @@ int writeDriverInfoToFile(Driver driver, char *filename) {
 
     return 1;
 }
+
+int getDriverTotalWeight(Driver driver) {
+    if (driver.truckLoad == NULL) return driver.truckWeight;
+    else return driver.truckWeight + calculateOrderWeight(driver.truckLoad); 
+}
