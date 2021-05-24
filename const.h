@@ -14,6 +14,7 @@
 /* Used in: driver.c */
 #define METHOD_TEST "retrieveDriverInfoFromFile()"
 #define WRITE_DRIVER_FILE_METHOD "writeDriverInfoToFile()"
+#define MAX_LENGTH_DRIVER_CODE 10
 
 /* Used in: logger.c */
 #define LOG_FILE "lasdp.log"
