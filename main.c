@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include "project.h"
-
+#include "ui.h"
+#include "utils.h"
 
 int main() {
-
-    projectRun();
 
     return 0;
 }
