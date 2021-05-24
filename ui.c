@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "ui.h"
+#include "const.h"
 #include "authlib.h"
 #include "driver.h"
 #include "productCatalogue.h"
@@ -34,9 +35,8 @@ void mainMenu() {
             break;
         
         case 3: // uscita dal programma
-            printf("Ok ciao arrivederci\n");
+            printf("Ok ciao arrivederci\n"); //TODO: Abbellire il testo
             running = false;
-            programPause();
             break;
 
         default: // errore
@@ -107,7 +107,7 @@ void registrationMenu() {
         char password[MAX_SIZE_PASSWORD];
         printf("Inserisci username:\n");
         scanf("%s", username); // TODO: Input pulito
-        printf("\nInserisci password:\n");
+        printf("Inserisci password:\n");
         scanf("%s", password); // TODO: Input pulito
 
         registrationCheck = doRegistration(username, password, DRIVER_LOGIN_DB);
@@ -151,6 +151,7 @@ void registrationMenu() {
 
                 writeDriverInfoToFile(driver, DRIVER_INFO_DB);
                 printf("Registrazione completata con successo! Ora puo' tornare al menu principale.\n");
+                programPause();
                 running = false;
                 break;
 
@@ -183,11 +184,14 @@ void driverMenu(Driver driver) {
             break;
         
         case 2:
-            driverDeliveryMenu(driver);
+            //driverDeliveryMenu(driver);
+            printf("Funzione non ancora disponibile!\n");
+            programPause();
             break;
         
         case 3:
             printf("Grazie mille arrivederci\n"); //TODO: Abbellire il testo
+            programPause();
             running = false;
             break;
 
@@ -204,33 +208,32 @@ void driverShopMenu(Driver driver) {
     bool running = true;
     int userChoice = -1;
 
-    PtrCatalogue catalogue = NULL;
+    PtrCatalogue catalogue = retrieveItemsFromCatalogueFile(PRODUCT_CATALOGUE_DB);
     PtrOrder cart = NULL; // richiamare il carrello del driver
-    do {
-        //TODO: pulizia schermo
-        openShopList();
 
+    do {
+        clearScreen();
         printf("Seleziona un'opzione:\n");
         printf("1. AGGIUNGI UN PRODOTTO AL CARRELLO\n");
         printf("2. VISUALIZZARE CARRELLO\n");
         printf("3. RIMUOVERE UN PRODOTTO DAL CARRELLO\n"); // da fare?
-        printf("4. CONFERMARE L'ORDINE\n\n");
+        printf("4. CONFERMARE L'ORDINE\n");
+        printf("5. ANNULLARE L'ORDINE\n");
+        printf("\n");
         printf("La tua scelta: ");
-        scanf("%d", &userChoice);
+        userChoice = getInt(4);
 
         switch (userChoice) {
-            case 1:
-                catalogue = retrieveItemsFromCatalogueFile("catalogue.txt");
+            case 1: // aggiunta di un prodotto al carrello
                 do {
                     //Racchiudere tutto in un unica funzione?
-                    PtrOrder item = NULL;
-                    item = addToCart(catalogue);
-                    cart = insertOrderOnEnd(cart, item);
+                    cart = addToCart(cart, catalogue);
+
                     printf("Articolo inserito! Seleziona un'opzione:\n");
                     printf("1. AGGIUNGI UN NUOVO PRODOTTO\n");
                     printf("2. TORNA INDIETRO\n\n");
                     printf("La tua scelta: ");
-                    scanf("%d", &userChoice); //TODO: input pulito
+                    userChoice = getInt(2);
                     switch (userChoice) {
                     case 1:
                         userChoice = -1; //FIXME: togliere questa istruzione tampone
@@ -241,59 +244,71 @@ void driverShopMenu(Driver driver) {
                         break;
                     }
                 } while (userChoice == -1);
-                //funzione di aggiunta al carrello
-                userChoice = 1; //FIXME: rimuovere questa istruzione tampone
                 break;
 
-            case 2:
+            case 2: // stato del carrello
                 showCartInfo(driver, cart);
                 break;
 
-            case 3:
-                //funzione di rimozione del prodotto dal carrello
+            case 3: // rimozione di un prodotto dal carrello
+                printf("Funzione non ancora implementata!\n");
+                programPause();
                 break;
 
-            case 4:
-                //salvataggio ordine
+            case 4: //salvataggio ordine
+                //FIXME: il driver non ha un campo per il carrello
                 running = false;
                 break;
+
+            case 5: //annullamento ordine
+                //TODO: liberare cart
+                printf("Nessuna modifica e' stata effettuata!\n");
+                programPause();
+                running = false;
 
             default:
                 //TODO: chiamare logger
                 printf("Non e' possibile procedere alle operazioni del carrello, riprovare piu' tardi.\n");
-                //TODO: funzione di pausa
+                programPause();
                 running = false;
         }
     } while (running);
 }
 
 /* Funzione di supporto per aggiungere un prodotto al carrello */
-PtrOrder addToCart(PtrCatalogue catalogue) {
-
+PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
     int productCode;
-    int quantity;
+    int productQuantity;
 
-    printf("\nInserisci il codice del prodotto desiderato:\n");
-    scanf("%d",&productCode);
+    do {
+        clearScreen();
+        print(catalogue);
+        printf("Inserisci il codice del prodotto desiderato:\n");
+        productCode = getInt(0);
+        if (productCode < 100) {
+            printf("Il codice prodotto inizia da 100 a salire. Riprova!\n");
+            programPause();
+        } 
+    } while (productCode < 100);
 
+    do {
+        clearScreen();
+        printf("Inserisci la quantita':\n");
+        productQuantity = getInt(0);
+        if (productQuantity < 1) {
+            printf("La quantita' deve essere un numero positivo. Riprova!\n");
+            programPause();
+        } 
+    } while (productQuantity < 1);
 
-    while(productCode<111 || productCode>121){
-        printf("\nProdotto non disponibile\n");
-        printf("\nInserisci il codice del prodotto desiderato:\n");
-        scanf("%d",&productCode);
-    }
+    PtrCatalogue catalogueItem = NULL;
+    catalogueItem = findElement(catalogue, productCode);
 
-    printf("\nIn che quantita'?\n");
-    scanf("%d",&quantity);
+    PtrOrder orderItem = NULL;
+    orderItem = createNewOrder(catalogueItem->item, productQuantity);
 
-    PtrCatalogue find = NULL;
-    find = findElement(catalogue,productCode);
-
-    PtrOrder singleElement = NULL;
-    singleElement = createNewOrder(find->item,quantity);
-
-    return singleElement;
-
+    cart = insertOrderOnEnd(cart, orderItem);
+    return cart;
 }
 
 /* Funzione di supporto per mostrare il carrello */

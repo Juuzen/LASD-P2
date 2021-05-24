@@ -8,7 +8,7 @@
 #include "productCatalogue.h"
 #include "driver.h"
 
-PtrOrder addToCart(PtrCatalogue catalogue);
+PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue);
 void registrationMenu();
 void showCartInfo(Driver driver, PtrOrder cart);
 void driverShopMenu(Driver driver);
