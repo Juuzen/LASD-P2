@@ -11,7 +11,7 @@
 PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue);
 void registrationMenu();
 void showCartInfo(Driver driver, PtrOrder cart);
-void driverShopMenu(Driver driver);
+void driverShopMenu(Driver* driver);
 void driverDeliveryMenu(Driver driver);
 void driverMenu(Driver driver);
 void authenticationMenu();

@@ -180,7 +180,7 @@ void driverMenu(Driver driver) {
 
         switch (userChoice){
         case 1:
-            driverShopMenu(driver);
+            driverShopMenu(&driver);
             break;
         
         case 2:
@@ -204,7 +204,7 @@ void driverMenu(Driver driver) {
 }
 
 /* Menu di gestione del carrello */
-void driverShopMenu(Driver driver) {
+void driverShopMenu(Driver* driver) {
     bool running = true;
     int userChoice = -1;
 
@@ -247,7 +247,7 @@ void driverShopMenu(Driver driver) {
                 break;
 
             case 2: // stato del carrello
-                showCartInfo(driver, cart);
+                showCartInfo((*driver), cart);
                 programPause();
                 break;
 
@@ -257,7 +257,7 @@ void driverShopMenu(Driver driver) {
                 break;
 
             case 4: //salvataggio ordine
-                driver.truckLoad = mergeLists(driver.truckLoad, cart);
+                (*driver).truckLoad = mergeLists((*driver).truckLoad, cart);
                 freeOrderList(cart);
                 printf("Carrello caricato con successo nel camion!\n");
                 programPause();

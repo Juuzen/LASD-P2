@@ -37,22 +37,16 @@ PtrOrder createNewOrder(Item item, int quantity) {
     return order;
 }
 
-/* Includo la lista secondaria in quella principale */
-PtrOrder mergeLists(PtrOrder mainList, PtrOrder addList) {
-    /* Se la lista principale è vuota, passo la secondaria */
-    if (mainList == NULL) return addList;
-    /* Se la lista secondaria è vuota, passo la principale */
-    if (addList == NULL) return mainList;
-    /* Creo un nuovo nodo da dover passare alla lista principale */
-    PtrOrder tmpOrder = createNewOrder(addList->item, addList->quantity);
-    /* Controllo se tale ordine è già presente nella lista, in caso affermativo lo inglobo */
-    mainList = insertOrderMergeOrEnd(mainList, tmpOrder);
-    /* Non ho più bisogno di questo riferimento */
-    tmpOrder = NULL;
-    /* Proseguo con il prossimo elemento della lista secondaria */
-    mainList = mergeLists(mainList, addList->next);
-    /* Ritorno la lista principale */
-    return mainList;
+PtrOrder mergeLists (PtrOrder driverList, PtrOrder cartList) {
+    PtrOrder tmpOrder = NULL;
+    while (cartList != NULL) {
+        printf("Stampo l'item: %s\n", cartList->item.itemLabel);
+        tmpOrder = createNewOrder(cartList->item, cartList->quantity);
+        driverList = insertOrderMergeOrEnd(driverList, tmpOrder);
+        cartList = cartList->next;
+    }
+
+    return driverList;
 }
 
 PtrOrder insertOrderMergeOrEnd(PtrOrder list, PtrOrder order) {
