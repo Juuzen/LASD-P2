@@ -35,7 +35,8 @@ int getInt(int maxRange) {
     scanfCheck = (scanf("%d", &tmp));
     flushStdin();
     if (scanfCheck == 1) {
-        if ((tmp > 0) && (tmp <= maxRange)) {
+        if (maxRange == 0) input = tmp;
+        else if ((tmp > 0) && (tmp <= maxRange)) {
             input = tmp;
         }
         else input = 0;
