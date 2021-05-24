@@ -2,8 +2,11 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "logger.h"
+#include "const.h"
 
 void programPause() {
+    //flushStdin();
     getchar();
 }
 
@@ -11,6 +14,7 @@ void clearScreen() {
     #ifdef _WIN32
     /* Istruzioni per sistema operativo Windows */
     system("cls");
+    logMessage(CLEAR_SCREEN_METHOD, LOG_LEVEL_DEBUG, "Cleared screen", 1);
     #endif
 
     #ifdef __linux__
@@ -59,4 +63,5 @@ void utilsDebugTest() {
 
     
     printf("Il numero scelto e': %d\n", input);
+    programPause();
 }

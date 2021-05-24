@@ -55,7 +55,6 @@ void authenticationMenu() {
 
     char username[MAX_SIZE_USERNAME];
     char password[MAX_SIZE_PASSWORD];
-
     do {
         clearScreen();
         printf("Inserisci username:\n");

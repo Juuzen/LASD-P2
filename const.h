@@ -28,4 +28,6 @@
 #define DRIVER_LOGIN_DB "registrazione.txt"
 #define PRODUCT_CATALOGUE_DB "catalogue.txt"
 
+#define CLEAR_SCREEN_METHOD "clearScreen()"
+
 #endif 
