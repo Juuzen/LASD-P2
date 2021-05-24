@@ -69,6 +69,7 @@ void authenticationMenu() {
             Driver driver;
             int driverCheck = retrieveDriverInfoFromFile(username, DRIVER_INFO_DB, &driver);
             if (driverCheck == 1) {
+                driver.truckLoad = NULL; //FIXME: Questa cosa deve andare all'inizializzazione del driver
                 driverMenu(driver);
             }
             else {
@@ -209,8 +210,8 @@ void driverShopMenu(Driver driver) {
     int userChoice = -1;
 
     PtrCatalogue catalogue = retrieveItemsFromCatalogueFile(PRODUCT_CATALOGUE_DB);
-    PtrOrder cart = NULL; // richiamare il carrello del driver
-
+    PtrOrder cart = NULL; 
+    
     do {
         clearScreen();
         printf("Seleziona un'opzione:\n");
@@ -221,7 +222,7 @@ void driverShopMenu(Driver driver) {
         printf("5. ANNULLARE L'ORDINE\n");
         printf("\n");
         printf("La tua scelta: ");
-        userChoice = getInt(4);
+        userChoice = getInt(5);
 
         switch (userChoice) {
             case 1: // aggiunta di un prodotto al carrello
@@ -248,6 +249,7 @@ void driverShopMenu(Driver driver) {
 
             case 2: // stato del carrello
                 showCartInfo(driver, cart);
+                programPause();
                 break;
 
             case 3: // rimozione di un prodotto dal carrello
@@ -256,15 +258,19 @@ void driverShopMenu(Driver driver) {
                 break;
 
             case 4: //salvataggio ordine
-                //FIXME: il driver non ha un campo per il carrello
+                driver.truckLoad = mergeLists(driver.truckLoad, cart);
+                freeOrderList(cart);
+                printf("Carrello caricato con successo nel camion!\n");
+                programPause();
                 running = false;
                 break;
 
             case 5: //annullamento ordine
-                //TODO: liberare cart
+                freeOrderList(cart);
                 printf("Nessuna modifica e' stata effettuata!\n");
                 programPause();
                 running = false;
+                break;
 
             default:
                 //TODO: chiamare logger
@@ -280,16 +286,28 @@ PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
     int productCode;
     int productQuantity;
 
+    PtrCatalogue catalogueItem = NULL;
+    PtrOrder orderItem = NULL;
+    bool itemFound = false;
     do {
         clearScreen();
         print(catalogue);
         printf("Inserisci il codice del prodotto desiderato:\n");
         productCode = getInt(0);
+        //In realtà questa operazione non serve a molto se poi dopo viene fatta la ricerca
         if (productCode < 100) {
             printf("Il codice prodotto inizia da 100 a salire. Riprova!\n");
             programPause();
         } 
-    } while (productCode < 100);
+        else {
+            catalogueItem = findElement(catalogue, productCode);
+            if (catalogueItem == NULL) {
+                printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
+                programPause();
+            }
+            else itemFound = true;
+        }
+    } while (!itemFound);
 
     do {
         clearScreen();
@@ -301,25 +319,32 @@ PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
         } 
     } while (productQuantity < 1);
 
-    PtrCatalogue catalogueItem = NULL;
-    catalogueItem = findElement(catalogue, productCode);
-
-    PtrOrder orderItem = NULL;
     orderItem = createNewOrder(catalogueItem->item, productQuantity);
 
-    cart = insertOrderOnEnd(cart, orderItem);
+    cart = insertOrderMergeOrEnd(cart, orderItem);
     return cart;
 }
 
 /* Funzione di supporto per mostrare il carrello */
 void showCartInfo(Driver driver, PtrOrder cart) {
-    printf("\n*** RIEPILOGO ORDINI ***\n\n");
+    clearScreen();
+    printf("*** RIEPILOGO ORDINI ***\n");
+    printf("Prodotti aggiunti al carrello:\n");
     printOrderList(cart);
-    printf("\n*** PESO TOTALE ORDINE ***\n");
+
+    if (driver.truckLoad != NULL) {
+        printf("\nProdotti gia' caricati:\n");
+        printOrderList(driver.truckLoad);
+    }
+    printf("\n");
+
+    printf("\n*** PESO TOTALE ORDINE ***\n\n");
 
     int cartWeight = calculateOrderWeight(cart);
-    printf("\npeso netto : %d", cartWeight);
-    printf("\npeso lordo : %d", cartWeight + driver.truckWeight);
+    int truckWeight = getDriverTotalWeight(driver);
+    printf("Peso del carrello: %d\n", cartWeight);
+    printf("Peso totale (provvisorio): %d\n", cartWeight + truckWeight); 
+    printf("Premere INVIO per tornare indietro.");
 }
 
 /* Menu di gestione delle consegne */
