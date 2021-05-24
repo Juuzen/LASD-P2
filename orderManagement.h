@@ -15,7 +15,11 @@ typedef struct Order {
 
 typedef struct Order* PtrOrder;
 
+void freeOrderNode(PtrOrder node);
+void freeOrderList(PtrOrder list);
 PtrOrder createNewOrder(Item item, int quantity);
+PtrOrder mergeLists(PtrOrder mainList, PtrOrder addList);
+PtrOrder insertOrderMergeOrEnd(PtrOrder list, PtrOrder order);
 PtrOrder insertOrderOnEnd(PtrOrder head, PtrOrder order);
 int calculateOrderWeight(PtrOrder orderList);
 void printOrderList(PtrOrder orderList);
