@@ -294,19 +294,13 @@ PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
         print(catalogue);
         printf("Inserisci il codice del prodotto desiderato:\n");
         productCode = getInt(0);
-        //In realtà questa operazione non serve a molto se poi dopo viene fatta la ricerca
-        if (productCode < 100) {
-            printf("Il codice prodotto inizia da 100 a salire. Riprova!\n");
-            programPause();
-        } 
-        else {
-            catalogueItem = findElement(catalogue, productCode);
-            if (catalogueItem == NULL) {
-                printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
-                programPause();
-            }
-            else itemFound = true;
+        catalogueItem = findElement(catalogue, productCode);
+        if (catalogueItem == NULL) {
+            printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
+            programPause();            
         }
+        
+        else itemFound = true;
     } while (!itemFound);
 
     do {
