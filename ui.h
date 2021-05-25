@@ -8,14 +8,16 @@
 #include "productCatalogue.h"
 #include "driver.h"
 
-PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue);
-void registrationMenu();
-void showCartInfo(Driver driver, PtrOrder cart);
-void driverShopMenu(Driver* driver);
-void driverDeliveryMenu(Driver driver);
-void driverMenu(Driver driver);
-void authenticationMenu();
 void mainMenu();
+void authenticationMenu();
+void registrationMenu();
+void driverMenu(Driver driver);
+void driverShopMenu(Driver* driver);
+PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue);
+PtrOrder removeItemFromCart(PtrOrder cart);
+void showCartInfo(Driver driver, PtrOrder cart);
+void showDriverInfoMenu(Driver driver);
+void driverDeliveryMenu(Driver driver);
 
 #endif //LASD_P2_UI_H
 

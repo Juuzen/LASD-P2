@@ -49,7 +49,7 @@ void mainMenu() {
     
 }
 
-/* Menu di autenticazione*/
+/* Menu di autenticazione */
 void authenticationMenu() {
     int loginCheck, userChoice;
     bool running = true;
@@ -175,7 +175,7 @@ void driverMenu(Driver driver) {
         printf("Seleziona il servizio che vuoi richiedere:\n");
         printf("1. EFFETTUARE LA SPESA\n");
         printf("2. EFFETTUARE UNA CONSEGNA\n");
-        printf("3. VISUALIZZA INFORMAZIONI CAMION\n");
+        printf("3. VISUALIZZA INFORMAZIONI DRIVER\n");
         printf("4. EFFETTUARE LOGOUT\n\n");
         printf("La tua scelta: ");
         userChoice = getInt(4);
@@ -190,8 +190,7 @@ void driverMenu(Driver driver) {
             break;
         
         case 3:
-            printf("Funzione non ancora implementata!\n");
-            programPause();
+            showDriverInfoMenu(driver);
             break;
 
         case 4:
@@ -232,7 +231,7 @@ void driverShopMenu(Driver* driver) {
             case 1: // aggiunta di un prodotto al carrello
                 do {
                     //Racchiudere tutto in un unica funzione?
-                    cart = addToCart(cart, catalogue);
+                    cart = addItemToCart(cart, catalogue);
 
                     printf("Articolo inserito! Seleziona un'opzione:\n");
                     printf("1. AGGIUNGI UN NUOVO PRODOTTO\n");
@@ -257,8 +256,32 @@ void driverShopMenu(Driver* driver) {
                 break;
 
             case 3: // rimozione di un prodotto dal carrello
-                printf("Funzione non ancora implementata!\n");
-                programPause();
+                do {
+                    if (cart == NULL) {
+                        userChoice = 2;
+                        printf("Il carrello e' vuoto! Non puoi rimuovere prodotti.\n");
+                        programPause();
+                    }
+
+                    else {
+                        cart = removeItemFromCart(cart);
+
+                        printf("Articolo rimosso! Seleziona un'opzione:\n");
+                        printf("1. RIMUOVI UN ALTRO PRODOTTO\n");
+                        printf("2. TORNA INDIETRO\n\n");
+                        printf("La tua scelta: ");
+                        userChoice = getInt(2);
+                        switch (userChoice) {
+                        case 1:
+                            userChoice = -1; //TODO: trovare un modo più elegante
+                            break;
+                        
+                        // non è necessario fare nulla per il caso 2
+                        default:
+                            break;
+                        }
+                    }
+                } while (userChoice == -1);
                 break;
 
             case 4: //salvataggio ordine
@@ -286,7 +309,7 @@ void driverShopMenu(Driver* driver) {
 }
 
 /* Funzione di supporto per aggiungere un prodotto al carrello */
-PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
+PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue) {
     int productCode;
     int productQuantity;
 
@@ -323,6 +346,57 @@ PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
     return cart;
 }
 
+/* Funzione di supporto per rimuovere un prodotto dal carrello */
+PtrOrder removeItemFromCart(PtrOrder cart) {
+    if (cart != NULL) {
+        bool running = true, exiting = false, wrongChoice = true;
+        int userChoice;
+        do {
+            clearScreen();
+            printf("Il tuo carrello al momento contiene:\n");
+            printOrderList(cart);
+            printf("Inserisci il codice prodotto dell'elemento da rimuovere: ");
+            userChoice = getInt(0);
+
+            if (findOrder(cart, userChoice)) {
+                running = false;
+            }
+
+            else {
+                do {
+                    printf("Scelta non corretta! Seleziona un'opzione:\n");
+                    printf("1. RIPROVA\n");
+                    printf("2. ESCI\n");
+                    printf("\nLa tua scelta: ");
+                    userChoice = getInt(2);
+
+                    switch (userChoice) {
+                        case 1:
+                            wrongChoice = false;
+                            break;
+
+                        case 2:
+                            wrongChoice = false;
+                            running = false;
+                            exiting = true;
+                            break;
+                        
+                        default:
+                            printf("Scelta non corretta! Riprovare.\n");
+                            programPause();
+                    } 
+                } while (wrongChoice);
+            } 
+        } while (running);
+    
+        if (!exiting) {
+            cart = removeOrder(cart, userChoice);
+        }
+    }
+
+    return cart;
+}
+
 /* Funzione di supporto per mostrare il carrello */
 void showCartInfo(Driver driver, PtrOrder cart) {
     clearScreen();
@@ -343,6 +417,19 @@ void showCartInfo(Driver driver, PtrOrder cart) {
     printf("Peso del carrello: %d\n", cartWeight);
     printf("Peso totale (provvisorio): %d\n", cartWeight + truckWeight); 
     printf("Premere INVIO per tornare indietro.");
+}
+
+/* Menu per mostrare le info attuali del driver */
+void showDriverInfoMenu(Driver driver) {
+    clearScreen();
+    printf("Username driver: %s\n", driver.driverCode);
+    printf("Peso del camion: %d\n", driver.truckWeight);
+    if (driver.truckLoad != NULL) {
+        printf("Elementi caricati nel camion:\n");
+        printOrderList(driver.truckLoad);
+        printf("Peso totale del camion: %d\n", getDriverTotalWeight(driver));
+    }
+    programPause();
 }
 
 /* Menu di gestione delle consegne */
