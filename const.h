@@ -10,6 +10,7 @@
 
 /* Used in: graph.c*/
 #define NODELIMIT 20
+#define ISLAND_NUMBER 17
 
 /* Used in: driver.c */
 #define METHOD_TEST "retrieveDriverInfoFromFile()"
