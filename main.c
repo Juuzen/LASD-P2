@@ -1,9 +1,9 @@
-//
-// Created by backs on 18/05/2021.
-//
-
 #include <stdio.h>
+#include "ui.h"
+#include "utils.h"
 
 int main() {
+    mainMenu();
+    //utilsDebugTest();
     return 0;
 }
