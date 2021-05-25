@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include "project.h"
-
+#include "ui.h"
+#include "utils.h"
 
 int main() {
-
-    projectRun();
-
+    mainMenu();
+    //utilsDebugTest();
     return 0;
 }

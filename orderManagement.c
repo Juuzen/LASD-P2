@@ -4,12 +4,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "orderManagement.h"
 #include "stdlib.h"
 
+void freeOrderNode(PtrOrder node) {
+    if (node != NULL) {
+        node->next = NULL;
+        node->quantity = 0;
+        node->item.codProduct = 0;
+        node->item.specificWeight = 0;
+        memset(node->item.itemLabel, '\0', sizeof(node->item.itemLabel));
+        free(node);
+    }
+}
+
+void freeOrderList(PtrOrder list) {
+    if (list != NULL) {
+        freeOrderList(list->next);
+        freeOrderNode(list);
+    }
+}
 
 PtrOrder createNewOrder(Item item, int quantity) {
-
     PtrOrder order;
     order = (PtrOrder)calloc(1, sizeof (Order));
     if(order!=NULL) {
@@ -18,6 +35,30 @@ PtrOrder createNewOrder(Item item, int quantity) {
         order->next = NULL;
     }
     return order;
+}
+
+PtrOrder mergeLists (PtrOrder driverList, PtrOrder cartList) {
+    PtrOrder tmpOrder = NULL;
+    while (cartList != NULL) {
+        printf("Stampo l'item: %s\n", cartList->item.itemLabel);
+        tmpOrder = createNewOrder(cartList->item, cartList->quantity);
+        driverList = insertOrderMergeOrEnd(driverList, tmpOrder);
+        cartList = cartList->next;
+    }
+
+    return driverList;
+}
+
+PtrOrder insertOrderMergeOrEnd(PtrOrder list, PtrOrder order) {
+    if (list == NULL) return order;
+    if (list->item.codProduct == order->item.codProduct) {
+        list->quantity += order->quantity;
+        /* Questo elemento può essere eliminato dal momento il suo contenuto viene incluso nella lista */
+        freeOrderNode(order);
+        return list;
+    }
+    list->next = insertOrderMergeOrEnd(list->next, order);
+    return list;
 }
 
 PtrOrder insertOrderOnEnd(PtrOrder head, PtrOrder order) {
@@ -38,6 +79,13 @@ int calculateOrderWeight(PtrOrder head) {
     }
 }
 
+void printOrderList2(PtrOrder list) {
+        if (list != NULL) {
+            printf("%s: x%d (%d kg)\n", list->item.itemLabel, list->quantity, list->item.specificWeight * list->quantity);
+            printOrderList(list->next);
+    }
+}
+
 void printOrderList(PtrOrder head) {
 
     if (head == NULL) {
@@ -55,46 +103,10 @@ void printOrderList(PtrOrder head) {
     }
 }
 
-PtrCatalogue findElement(PtrCatalogue catalogue,int code)
+PtrCatalogue findElement(PtrCatalogue catalogueItem, int productCode)
 {
-    PtrCatalogue find = catalogue;
-    if(find == NULL){
-        return NULL;
-    }
-
-    if (catalogue !=NULL && code!=catalogue->item.codProduct)
-        find = findElement(catalogue->next,code);
-
-    return find;
+    if (catalogueItem == NULL) return NULL;
+    if (catalogueItem->item.codProduct == productCode) return catalogueItem;
+    return findElement(catalogueItem->next, productCode);
 
 }
-
-PtrOrder addToCart(PtrCatalogue catalogue){
-
-    int productCode;
-    int quantity;
-
-    printf("\nInserisci il codice del prodotto desiderato:\n");
-    scanf("%d",&productCode);
-
-
-    while(productCode<111 || productCode>121){
-        printf("\nProdotto non disponibile\n");
-        printf("\nInserisci il codice del prodotto desiderato:\n");
-        scanf("%d",&productCode);
-    }
-
-    printf("\nIn che quantita'?\n");
-    scanf("%d",&quantity);
-
-    PtrCatalogue find = NULL;
-    find = findElement(catalogue,productCode);
-
-    PtrOrder singleElement = NULL;
-    singleElement = createNewOrder(find->item,quantity);
-
-    return singleElement;
-
-}
-
-

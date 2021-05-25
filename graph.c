@@ -117,6 +117,20 @@ Edge edge_findNode(Edge list, int source, int dest) {
         return list;
     return edge_findNode(list->next, source, dest);
 }
+void edge_printPath(Edge list, int offset) {
+    if (list == NULL) {
+        printf("///\n");
+        return;
+    }
+
+    if (list->next != NULL) {
+        printf("%d -> ", list->sourceIndex + offset);
+        edge_printPath(list->next, offset);
+        return;
+    }
+
+    printf("%d -> %d\n", list->sourceIndex + offset, list->destIndex + offset);
+}
 void edge_debugPrintNode(Edge node) {
     if (node != NULL) 
         printf("%d -> %d (W: %d)\n", node->sourceIndex, node->destIndex, node->weight);
@@ -260,53 +274,7 @@ Edge graph_findShortestPath(Graph G, int startIndex, int endIndex, int truckWeig
     /* Altrimenti return NULL */
     return NULL;
 }
-Graph graph_getSampleGraph() {
-    Graph G = graph_new();
-    graph_addNode(G); // A - 0
-    graph_addNode(G); // B - 1
-    graph_addNode(G); // C - 2
-    graph_addNode(G); // D - 3
-    graph_addNode(G); // E - 4
-    graph_addNode(G); // F - 5
-    graph_addNode(G); // G - 6
-    graph_addNode(G); // H - 7
-    graph_addNode(G); // I - 8
-    graph_addNode(G); // J - 9
-    graph_addNode(G); // K - 10
-    graph_addNode(G); // L - 11
-    graph_addNode(G); // M - 12
 
-    graph_addEdge(G, false, 0, 1, 100);   // A-B
-    graph_addEdge(G, false, 0, 4, 100);   // A-E
-    graph_addEdge(G, false, 0, 8, 100);   // A-I
-
-    graph_addEdge(G, false, 1, 4, 0);     // B-E
-    graph_addEdge(G, false, 1, 5, 100);   // B-F
-    graph_addEdge(G, false, 1, 8, 100);   // B-I
-
-    graph_addEdge(G, false, 2, 5, 0);     // C-F
-    graph_addEdge(G, false, 2, 12, 0);    // C-M
-    graph_addEdge(G, false, 2, 9, 100);   // C-J
-    graph_addEdge(G, false, 2, 6, 0);     // C-G
-
-    graph_addEdge(G, false, 3, 11, 100);  // D-L
-    graph_addEdge(G, false, 3, 9, 100);   // D-J
-    graph_addEdge(G, false, 3, 6, 100);   // D-G
-
-    graph_addEdge(G, false, 4, 7, 100);   // E-H
-
-    graph_addEdge(G, false, 5, 8, 0);     // F-I
-    graph_addEdge(G, false, 5, 9, 100);   // F-J
-    graph_addEdge(G, false, 5, 12, 100);  // F-M
-    
-    graph_addEdge(G, false, 6, 10, 100);  // G-K
-
-    graph_addEdge(G, false, 7, 8, 100);   // H-I
-
-    graph_addEdge(G, false, 10, 11, 100); // K-L
-    
-    return G;
-}
 void graph_debugPrint(Graph G) {
     if (G != NULL) {
         for (int i = 0; i < G->nodeCount; i++) {
@@ -314,4 +282,150 @@ void graph_debugPrint(Graph G) {
             else printf("Il nodo %d non ha nodi adiacenti.\n", i);
         }
     }
+}
+
+/* FUNZIONI CREAZIONE ARCIPELAGO */
+
+/* Tutti gli archi hanno peso >= 2500, il grafo è connesso */
+Graph graph_createSampleGraph1 () {
+    Graph G = graph_new();
+
+    for (int i = 0; i < ISLAND_NUMBER; i++) 
+        graph_addNode(G);
+
+    graph_addEdge(G, false, 0, 1, 3000); // A-B 
+    graph_addEdge(G, false, 0, 4, 2500); // A-E 
+    graph_addEdge(G, false, 0, 8, 3200); // A-I
+    
+    graph_addEdge(G, false, 1, 2, 2500); // B-C
+    graph_addEdge(G, false, 1, 4, 2800); // B-E
+
+    graph_addEdge(G, false, 2, 3, 3000); // C-D
+    graph_addEdge(G, false, 2, 5, 2850); // C-F
+
+    graph_addEdge(G, false, 3, 6, 2750); // D-G
+    graph_addEdge(G, false, 3, 7, 2500); // D-H
+    graph_addEdge(G, false, 3, 12, 3000); // D-M
+
+    graph_addEdge(G, false, 4, 8, 3500); // E-I
+    graph_addEdge(G, false, 4, 9, 3200); // E-J
+
+    graph_addEdge(G, false, 5, 6, 3000); // F-G
+    graph_addEdge(G, false, 5, 10, 2600); // F-K
+    graph_addEdge(G, false, 5, 11, 3000); // F-L
+
+    graph_addEdge(G, false, 6, 15, 2800); // G-P
+
+    graph_addEdge(G, false, 7, 12, 2750); // H-M
+
+    graph_addEdge(G, false, 8, 13, 2800); // I-N
+
+    graph_addEdge(G, false, 9, 10, 3000); // J-K
+    graph_addEdge(G, false, 9, 13, 3000); // J-N
+    graph_addEdge(G, false, 9, 14, 2600); // J-O
+
+    graph_addEdge(G, false, 11, 14, 3000); // L-O
+    graph_addEdge(G, false, 11, 15, 2800); // L-P
+
+    graph_addEdge(G, false, 12, 15, 3000); // M-P
+    graph_addEdge(G, false, 12, 16, 2800); // M-Q
+
+    graph_addEdge(G, false, 13, 14, 2750); // N-O
+
+    graph_addEdge(G, false, 14, 15, 3000); // O-P
+
+    graph_addEdge(G, false, 15, 16, 3000); // P-Q
+    
+    return G;
+}
+
+/* Come per il sample graph 1, ma alcuni archi hanno un peso <= 300 */
+Graph graph_createSampleGraph2 () {
+    Graph G = graph_new();
+
+    for (int i = 0; i < ISLAND_NUMBER; i++) 
+        graph_addNode(G);
+
+    graph_addEdge(G, false, 0, 1, 3000); // A-B 
+    graph_addEdge(G, false, 0, 4, 200); // A-E 
+    graph_addEdge(G, false, 0, 8, 100); // A-I
+    
+    graph_addEdge(G, false, 1, 2, 200); // B-C
+    graph_addEdge(G, false, 1, 4, 2800); // B-E
+
+    graph_addEdge(G, false, 2, 3, 100); // C-D
+    graph_addEdge(G, false, 2, 5, 2850); // C-F
+
+    graph_addEdge(G, false, 3, 6, 2750); // D-G
+    graph_addEdge(G, false, 3, 7, 200); // D-H
+    graph_addEdge(G, false, 3, 12, 3000); // D-M
+
+    graph_addEdge(G, false, 4, 8, 300); // E-I
+    graph_addEdge(G, false, 4, 9, 3200); // E-J
+
+    graph_addEdge(G, false, 5, 6, 300); // F-G
+    graph_addEdge(G, false, 5, 10, 200); // F-K
+    graph_addEdge(G, false, 5, 11, 3000); // F-L
+
+    graph_addEdge(G, false, 6, 15, 2800); // G-P
+
+    graph_addEdge(G, false, 7, 12, 2750); // H-M
+
+    graph_addEdge(G, false, 8, 13, 2800); // I-N
+
+    graph_addEdge(G, false, 9, 10, 150); // J-K
+    graph_addEdge(G, false, 9, 13, 200); // J-N
+    graph_addEdge(G, false, 9, 14, 2600); // J-O
+
+    graph_addEdge(G, false, 11, 14, 300); // L-O
+    graph_addEdge(G, false, 11, 15, 200); // L-P
+
+    graph_addEdge(G, false, 12, 15, 100); // M-P
+    graph_addEdge(G, false, 12, 16, 200); // M-Q
+
+    graph_addEdge(G, false, 13, 14, 2750); // N-O
+
+    graph_addEdge(G, false, 14, 15, 3000); // O-P
+
+    graph_addEdge(G, false, 15, 16, 3000); // P-Q
+    
+    return G;
+}
+
+/* Come per il sample graph 2, ma il grafo è una foresta (alcuni archi sono assenti) */
+Graph graph_createSampleGraph3 () {
+    Graph G = graph_new();
+
+    for (int i = 0; i < ISLAND_NUMBER; i++) 
+        graph_addNode(G);
+
+    graph_addEdge(G, false, 0, 1, 3000); // A-B 
+    graph_addEdge(G, false, 0, 8, 100); // A-I
+    
+    graph_addEdge(G, false, 1, 4, 2800); // B-E
+
+    graph_addEdge(G, false, 2, 3, 100); // C-D
+    graph_addEdge(G, false, 2, 5, 2850); // C-F
+
+    graph_addEdge(G, false, 3, 6, 2750); // D-G
+
+    graph_addEdge(G, false, 4, 8, 300); // E-I
+
+    graph_addEdge(G, false, 5, 6, 300); // F-G
+
+    graph_addEdge(G, false, 7, 12, 2750); // H-M
+
+    graph_addEdge(G, false, 9, 13, 200); // J-N
+    graph_addEdge(G, false, 9, 14, 2600); // J-O
+
+    graph_addEdge(G, false, 11, 14, 300); // L-O
+
+    graph_addEdge(G, false, 12, 15, 100); // M-P
+    graph_addEdge(G, false, 12, 16, 200); // M-Q
+
+    graph_addEdge(G, false, 13, 14, 2750); // N-O
+
+    graph_addEdge(G, false, 15, 16, 3000); // P-Q
+    
+    return G;
 }

@@ -8,6 +8,22 @@
 #include "productCatalogue.h"
 #include "const.h"
 
+void freeCatalogueNode(PtrCatalogue node) {
+    if (node != NULL) {
+        node->next = NULL;
+        node->item.codProduct = 0;
+        node->item.specificWeight = 0;
+        memset(node->item.itemLabel, '\0', sizeof(node->item.itemLabel));
+        free(node);
+    }
+}
+
+void freeCatalogueList(PtrCatalogue list) {
+    if (list != NULL) {
+        freeCatalogueList(list->next);
+        freeCatalogueNode(list);
+    }
+}
 
 Item createNewItem(char *itemLabel, int specificWeight, int codProduct){
     Item item;
@@ -28,7 +44,7 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
     FILE *productCatalogue = fopen(catalogueFilename, "r");
 
     //Product catalogue declaration
-    PtrCatalogue tmp = NULL;
+    PtrCatalogue catalogue = NULL;
 
     // Sanity check on fileopen
     if (productCatalogue == NULL) {
@@ -43,12 +59,12 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
         if (scannedElements == 3) {
             Item genericItem = createNewItem(localProductLabel, localSpecificWeight, localProductCode);
             PtrCatalogue item = createNodeCatalogue(genericItem);
-            tmp = insertTail(tmp,item);
+            catalogue = insertTail(catalogue, item);
         }
     }
     fclose(productCatalogue);
 
-    return tmp;
+    return catalogue;
 }
 
 void debugPrint(Item item) {
@@ -68,10 +84,10 @@ PtrCatalogue createNodeCatalogue(Item item){
     return tmp;
 }
 
-PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list){
-    if(list==NULL) return tmp;
-    list->next=insertTail(tmp,list->next);
-    return list;
+PtrCatalogue insertTail(PtrCatalogue catalogue, PtrCatalogue item) {
+    if (catalogue == NULL) return item;
+    catalogue->next = insertTail(catalogue->next, item);
+    return catalogue;
 }
 
 void print(PtrCatalogue list){
@@ -81,13 +97,5 @@ void print(PtrCatalogue list){
         debugPrint(list->item);
         list = list->next;
     }
-}
-
-void openShopList(){
-
-    PtrCatalogue catalogue = NULL;
-    catalogue = retrieveItemsFromCatalogueFile("catalogue.txt");
-
-    print(catalogue);
 }
 

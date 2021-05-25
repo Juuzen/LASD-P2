@@ -20,12 +20,15 @@ typedef struct Catalogue {
 
 typedef struct Catalogue* PtrCatalogue;
 
+void freeCatalogueNode(PtrCatalogue node);
+void freeCatalogueList(PtrCatalogue list);
+
 Item createNewItem(char *itemLabel, int specificWeight, int codProduct);
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename);
-PtrCatalogue insertTail(PtrCatalogue tmp, PtrCatalogue list);
+PtrCatalogue insertTail(PtrCatalogue catalogue, PtrCatalogue item);
 void print(PtrCatalogue list);
 PtrCatalogue createNodeCatalogue(Item item);
-void openShopList();
+
 
 //DEBUG ONLY
 void debugPrint(Item item);
