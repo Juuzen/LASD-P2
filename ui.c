@@ -175,9 +175,10 @@ void driverMenu(Driver driver) {
         printf("Seleziona il servizio che vuoi richiedere:\n");
         printf("1. EFFETTUARE LA SPESA\n");
         printf("2. EFFETTUARE UNA CONSEGNA\n");
-        printf("3. EFFETTUARE LOGOUT\n\n");
+        printf("3. VISUALIZZA INFORMAZIONI CAMION\n");
+        printf("4. EFFETTUARE LOGOUT\n\n");
         printf("La tua scelta: ");
-        userChoice = getInt(3);
+        userChoice = getInt(4);
 
         switch (userChoice){
         case 1:
@@ -185,21 +186,23 @@ void driverMenu(Driver driver) {
             break;
         
         case 2:
-            //driverDeliveryMenu(driver);
-            printf("Funzione non ancora disponibile!\n");
-            programPause();
+            driverDeliveryMenu(driver);
             break;
         
         case 3:
+            printf("Funzione non ancora implementata!\n");
+            programPause();
+
+        case 4:
+            running = false;
             printf("Grazie mille arrivederci\n"); //TODO: Abbellire il testo
             programPause();
-            running = false;
             break;
 
         default:
             printf("Scelta sbagliata! Riprovare\n"); //TODO: Abbellire il testo
             programPause();
-            //TODO: chiamare logger
+            //TODO: chiamare logger, non si dovrebbe essere qui
         }
     } while (running);
 }
