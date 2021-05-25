@@ -208,6 +208,7 @@ void driverMenu(Driver driver) {
 }
 
 /* Menu di gestione del carrello */
+//TODO: Switchare di posto opzione 2 e 3
 void driverShopMenu(Driver* driver) {
     bool running = true;
     int userChoice = -1;
@@ -347,6 +348,7 @@ PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue) {
 }
 
 /* Funzione di supporto per rimuovere un prodotto dal carrello */
+//FIXME: la stampa degli ordini nel carrello non mostra il codice prodotto
 PtrOrder removeItemFromCart(PtrOrder cart) {
     if (cart != NULL) {
         bool running = true, exiting = false, wrongChoice = true;
