@@ -6,7 +6,7 @@
 #include "const.h"
 
 void programPause() {
-    //flushStdin();
+    printf("Premi INVIO per continuare...");
     getchar();
 }
 
