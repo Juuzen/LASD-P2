@@ -4,7 +4,7 @@
 
 #ifndef LASD_P2_ORDERMANAGEMENT_H
 #define LASD_P2_ORDERMANAGEMENT_H
-
+#include <stdbool.h>
 #include "productCatalogue.h"
 
 typedef struct Order {
@@ -17,6 +17,8 @@ typedef struct Order* PtrOrder;
 
 void freeOrderNode(PtrOrder node);
 void freeOrderList(PtrOrder list);
+bool findOrder(PtrOrder list, int productCode);
+PtrOrder removeOrder(PtrOrder list, int productCode);
 PtrOrder createNewOrder(Item item, int quantity);
 PtrOrder mergeLists(PtrOrder mainList, PtrOrder addList);
 PtrOrder insertOrderMergeOrEnd(PtrOrder list, PtrOrder order);

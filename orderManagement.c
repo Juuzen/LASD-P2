@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "orderManagement.h"
 #include "stdlib.h"
 
@@ -25,6 +26,23 @@ void freeOrderList(PtrOrder list) {
         freeOrderNode(list);
     }
 }
+
+bool findOrder(PtrOrder list, int productCode) {
+    if (list == NULL) return false;
+    if (list->item.codProduct == productCode) return true;
+    else return findOrder(list->next, productCode);
+}
+
+PtrOrder removeOrder(PtrOrder list, int productCode) {
+    if (list == NULL) return NULL;
+    if (list->item.codProduct == productCode) {
+        PtrOrder tmp = list->next;
+        freeOrderNode(list);
+        return tmp;
+    }
+    list->next = removeOrder(list->next, productCode);
+    return list;
+} 
 
 PtrOrder createNewOrder(Item item, int quantity) {
     PtrOrder order;
