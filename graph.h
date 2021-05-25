@@ -2,7 +2,6 @@
 #define graph_h
 #include <stdbool.h>
 
-
 typedef struct list {
     int value;
     struct list* next;

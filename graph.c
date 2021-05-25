@@ -4,6 +4,7 @@
 #include "const.h"
 
 /* FUNZIONI LISTE */
+//TODO: spostare queste funzioni in list.h
 void list_freeNode(List node) {
     if (node != NULL) {
         node->value = 0;
@@ -55,6 +56,7 @@ void list_debugPrint(List L) {
 }
 
 /* FUNZIONI ARCHI */
+//TODO: Spostare queste funzioni in edge.h
 void edge_freeNode(Edge node) {
     if (node != NULL) {
         node->sourceIndex = 0;
@@ -206,6 +208,9 @@ void graph_removeEdge(Graph G, bool ordered, int sourceIndex, int destIndex) {
 }
 Edge graph_findShortestPath(Graph G, int startIndex, int endIndex, int truckWeight) {
     if (G == NULL) return NULL;
+
+    //TODO: Vedere nell'algoritmo se c'è qualche modo per inglobare questa funzione
+    if (startIndex == endIndex) return edge_newNode(startIndex, endIndex, 0);
 
     /* Inizializzazione vettore predecessori */
     int prev[G->nodeCount];
