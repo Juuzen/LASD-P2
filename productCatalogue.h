@@ -26,11 +26,8 @@ void freeCatalogueList(PtrCatalogue list);
 Item createNewItem(char *itemLabel, int specificWeight, int codProduct);
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename);
 PtrCatalogue insertTail(PtrCatalogue catalogue, PtrCatalogue item);
-void print(PtrCatalogue list);
+void printItemList(PtrCatalogue list);
 PtrCatalogue createNodeCatalogue(Item item);
-
-
-//DEBUG ONLY
-void debugPrint(Item item);
+void printSingleItem(Item item);
 
 #endif //LASD_P2_PRODUCTCATALOGUE_H

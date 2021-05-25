@@ -58,7 +58,6 @@ PtrOrder createNewOrder(Item item, int quantity) {
 PtrOrder mergeLists (PtrOrder driverList, PtrOrder cartList) {
     PtrOrder tmpOrder = NULL;
     while (cartList != NULL) {
-        printf("Stampo l'item: %s\n", cartList->item.itemLabel);
         tmpOrder = createNewOrder(cartList->item, cartList->quantity);
         driverList = insertOrderMergeOrEnd(driverList, tmpOrder);
         cartList = cartList->next;
@@ -113,6 +112,7 @@ void printOrderList(PtrOrder head) {
     int i = 1;
     while(head) {
         printf("%d)\n",i);
+        printf("Codice: %d\n", head->item.codProduct);  //Issue #21
         printf("Nome: %s\n", head->item.itemLabel);
         printf("Peso specifico (per cassa): %d kg\n", head->item.specificWeight);
         printf("Quantita': %d\n\n", head->quantity);

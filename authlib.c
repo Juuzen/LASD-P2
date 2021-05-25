@@ -7,6 +7,7 @@
 #include "driver.h"
 #include "authlib.h"
 #include "const.h"
+#include "logger.h"
 
 /*
  *  MAX_SIZE_USERNAME e MAX_SIZE_PASSWORD vengono usati + 1 per accomodare il carattere di terminazione '\0'
@@ -28,6 +29,7 @@ int doLogin(char *username, char *password, char *filename) {
 
     // Sanity check su input passati alla funzione
     if (username == NULL || password == NULL || filename == NULL) {
+        logMessage(METHOD_AUTH_DO_LOGIN, LOG_LEVEL_ERROR, "Error in input variables");
         return -2;
     }
 
@@ -35,6 +37,7 @@ int doLogin(char *username, char *password, char *filename) {
 
     // Sanity check sull'apertura del file
     if (loginFile == NULL) {
+        logMessage(METHOD_AUTH_DO_LOGIN, LOG_LEVEL_ERROR, "Error opening file");
         return -1;
     }
 
@@ -67,10 +70,12 @@ int doLogin(char *username, char *password, char *filename) {
  */
 int doRegistration(char *username, char *password, char *filename) {
     if (username == NULL || password == NULL || filename == NULL) {
+        logMessage(METHOD_AUTH_DO_REGISTRATION, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
     if (checkIfUsernameAlreadyExists(username, filename) == 1) {
+        logMessage(METHOD_AUTH_DO_REGISTRATION, LOG_LEVEL_INFO, "Username already exists");
         return -2;
     }
 
@@ -80,6 +85,7 @@ int doRegistration(char *username, char *password, char *filename) {
 
     // Sanity check su file nullo
     if (registrationFile == NULL) {
+        logMessage(METHOD_AUTH_DO_REGISTRATION, LOG_LEVEL_ERROR, "Error opening auth file");
         return -1;
     }
 
@@ -96,12 +102,14 @@ int checkIfUsernameAlreadyExists(char *username, char *filename) {
     FILE *registrationFile = NULL;
 
     if (filename == NULL || username == NULL) {
+        logMessage(METHOD_AUTH_CHECK_USERNAME, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
     registrationFile = fopen(filename, "r");
 
     if (registrationFile == NULL) {
+        logMessage(METHOD_AUTH_CHECK_USERNAME, LOG_LEVEL_ERROR, "Error opening file");
         return -1;
     }
 

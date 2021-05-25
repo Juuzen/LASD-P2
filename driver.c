@@ -23,22 +23,20 @@
  */
 int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver) {
     if (driver == NULL) {
-        logMessage(METHOD_TEST, LOG_LEVEL_ERROR, "DRIVER NOT INITIALIZED", 1);
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error on driver - not initialized");
         return -100;
     }
 
     // Sanity check on input
     if (driverCode == NULL || filename == NULL) {
-        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
-        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - other inputs null\n");
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "r");
 
     if (driverDatabase == NULL) {
-        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
-        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - file opening null\n");
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error in opening file");
         return -2;
     }
 
@@ -72,14 +70,14 @@ int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver)
  */
 int writeDriverInfoToFile(Driver driver, char *filename) {
     if (filename == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Filename is null", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Filename is null");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "a");
 
     if (driverDatabase == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error opening file", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error opening file");
         return -2;
     }
 
@@ -87,7 +85,7 @@ int writeDriverInfoToFile(Driver driver, char *filename) {
     int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
 
     if (printFileResult < 0) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error writing to file", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error writing to file");
         return 0;
     }
 

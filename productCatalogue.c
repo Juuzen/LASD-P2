@@ -7,6 +7,7 @@
 #include "string.h"
 #include "productCatalogue.h"
 #include "const.h"
+#include "logger.h"
 
 void freeCatalogueNode(PtrCatalogue node) {
     if (node != NULL) {
@@ -37,6 +38,7 @@ Item createNewItem(char *itemLabel, int specificWeight, int codProduct){
 PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
     // Sanity check on filename
     if (catalogueFilename == NULL) {
+        logMessage(METHOD_CATALOGUE_RETRIEVE_ITEM_FROM_FILE, LOG_LEVEL_ERROR, "Input variable is NULL");
         return NULL;
     }
 
@@ -48,6 +50,7 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
 
     // Sanity check on fileopen
     if (productCatalogue == NULL) {
+        logMessage(METHOD_CATALOGUE_RETRIEVE_ITEM_FROM_FILE, LOG_LEVEL_ERROR, "Error opening product catalogue file");
         return NULL;
     }
 
@@ -67,7 +70,7 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
     return catalogue;
 }
 
-void debugPrint(Item item) {
+void printSingleItem(Item item) {
     printf("\n\tCode:%d\n\tLabel: %s\n\tSpecific weight: %d\n", item.codProduct, item.itemLabel, item.specificWeight);
 }
 
@@ -90,11 +93,11 @@ PtrCatalogue insertTail(PtrCatalogue catalogue, PtrCatalogue item) {
     return catalogue;
 }
 
-void print(PtrCatalogue list){
+void printItemList(PtrCatalogue list){
 
     printf("Product List...\n");
     while(list!=NULL){
-        debugPrint(list->item);
+        printSingleItem(list->item);
         list = list->next;
     }
 }

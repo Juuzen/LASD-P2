@@ -11,6 +11,7 @@
 #include "productCatalogue.h"
 #include "orderManagement.h"
 #include "utils.h"
+#include "logger.h"
 
 /* Entry point del progetto */
 void mainMenu() {
@@ -134,7 +135,7 @@ void registrationMenu() {
             
             // Problema di accesso ai file interni
             case -1:
-                //TODO: Aggiungere logger
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Error during registration of driver");
                 printf("Non e' possibile proseguire con la registrazione. Riprovare piu' tardi.\n");
                 running = false;
                 //TODO: Funzione di pausa
@@ -265,13 +266,21 @@ void driverShopMenu(Driver* driver) {
                     }
 
                     else {
-                        cart = removeItemFromCart(cart);
+                        int exitMenu = 0;
 
-                        printf("Articolo rimosso! Seleziona un'opzione:\n");
-                        printf("1. RIMUOVI UN ALTRO PRODOTTO\n");
-                        printf("2. TORNA INDIETRO\n\n");
-                        printf("La tua scelta: ");
-                        userChoice = getInt(2);
+                        cart = removeItemFromCart(cart, &exitMenu);
+
+                        if (exitMenu == 0) {
+                            printf("Articolo rimosso! Seleziona un'opzione:\n");
+                            printf("1. RIMUOVI UN ALTRO PRODOTTO\n");
+                            printf("2. TORNA INDIETRO\n\n");
+                            printf("La tua scelta: ");
+                            userChoice = getInt(2);
+                        } else {
+                            userChoice = 2;
+                        }
+
+
                         switch (userChoice) {
                         case 1:
                             userChoice = -1; //TODO: trovare un modo più elegante
@@ -301,7 +310,7 @@ void driverShopMenu(Driver* driver) {
                 break;
 
             default:
-                //TODO: chiamare logger
+
                 printf("Non e' possibile procedere alle operazioni del carrello, riprovare piu' tardi.\n");
                 programPause();
                 running = false;
@@ -319,7 +328,7 @@ PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue) {
     bool itemFound = false;
     do {
         clearScreen();
-        print(catalogue);
+        printItemList(catalogue);
         printf("Inserisci il codice del prodotto desiderato:\n");
         productCode = getInt(0);
         catalogueItem = findElement(catalogue, productCode);
@@ -348,8 +357,7 @@ PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue) {
 }
 
 /* Funzione di supporto per rimuovere un prodotto dal carrello */
-//FIXME: la stampa degli ordini nel carrello non mostra il codice prodotto
-PtrOrder removeItemFromCart(PtrOrder cart) {
+PtrOrder removeItemFromCart(PtrOrder cart, int *exitHigherLevelMenu) {
     if (cart != NULL) {
         bool running = true, exiting = false, wrongChoice = true;
         int userChoice;
@@ -381,6 +389,7 @@ PtrOrder removeItemFromCart(PtrOrder cart) {
                             wrongChoice = false;
                             running = false;
                             exiting = true;
+                            *exitHigherLevelMenu = 1;
                             break;
                         
                         default:

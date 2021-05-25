@@ -14,7 +14,7 @@ void clearScreen() {
     #ifdef _WIN32
     /* Istruzioni per sistema operativo Windows */
     system("cls");
-    logMessage(CLEAR_SCREEN_METHOD, LOG_LEVEL_DEBUG, "Cleared screen", 1);
+    logMessage(CLEAR_SCREEN_METHOD, LOG_LEVEL_DEBUG, "Cleared screen");
     #endif
 
     #ifdef __linux__

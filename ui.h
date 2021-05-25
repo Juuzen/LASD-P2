@@ -14,7 +14,7 @@ void registrationMenu();
 void driverMenu(Driver driver);
 void driverShopMenu(Driver* driver);
 PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue);
-PtrOrder removeItemFromCart(PtrOrder cart);
+PtrOrder removeItemFromCart(PtrOrder cart, int *wasItemRemoved);
 void showCartInfo(Driver driver, PtrOrder cart);
 void showDriverInfoMenu(Driver driver);
 void driverDeliveryMenu(Driver driver);

@@ -15,6 +15,6 @@
  *          1 - Writes only on file
  *          2 - Writes both on stderr or file
  */
-void logMessage(char *method, char *logLevel, char *message, int writeOnFile);
+void logMessage(char *method, char *logLevel, char *message);
 
 #endif //LASD_P2_LOGGER_H
