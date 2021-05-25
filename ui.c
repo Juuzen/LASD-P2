@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "ui.h"
+#include "graph.h"
 #include "const.h"
 #include "authlib.h"
 #include "driver.h"
@@ -342,5 +343,126 @@ void showCartInfo(Driver driver, PtrOrder cart) {
 
 /* Menu di gestione delle consegne */
 void driverDeliveryMenu(Driver driver) {
-    //TODO: da fare
+    int userChoice;
+    bool running = true, scenarioChosen = false;
+
+    int startIslandIndex, endIslandIndex, truckWeight;
+    Graph archipelago = NULL;
+    Edge deliveryPath = NULL;
+
+    do {
+        do {
+            clearScreen();
+            printf("Prego, seleziona uno scenario:\n");
+            printf("1. Ponti resistenti, tutte le isole sono collegate tra di loro\n");
+            printf("2. Tutte le isole sono collegate tra di loro, ma alcuni ponti sono instabili\n");
+            printf("3. Alcuni ponti sono instabili, non tutte le isole sono collegate tra di loro\n");
+            printf("\nLa tua scelta: ");
+            userChoice = getInt(3);
+
+            /* Carichiamo l'arcipelago corretto */
+            switch (userChoice) {
+                case 1:
+                    archipelago = graph_createSampleGraph1();
+                    scenarioChosen = true;
+                    break;
+                
+                case 2:
+                    archipelago = graph_createSampleGraph2();
+                    scenarioChosen = true;
+                    break;
+                
+                case 3:
+                    archipelago = graph_createSampleGraph3();
+                    scenarioChosen = true;
+                    break;
+
+                default:
+                    printf("Scelta sbagliata! Riprovare.\n");
+                    programPause();
+            }
+        } while (!scenarioChosen);
+
+        /* Prendiamo l'input per l'isola di partenza */
+        do {
+            clearScreen();
+            printf("Seleziona l'isola di partenza (da 1 a %d): ", ISLAND_NUMBER);
+            startIslandIndex = getInt(ISLAND_NUMBER);
+            /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
+            if (startIslandIndex <= 0) {
+                printf("Scelta non corretta! Riprovare.\n");
+                programPause();
+            }
+        } while (startIslandIndex <= 0);
+        /* A questo punto decrementiamo startIslandIndex per poterlo utilizzare correttamente nell'algoritmo */
+        startIslandIndex--;
+
+        /* Prendiamo l'input per l'isola di arrivo */
+        do {
+            clearScreen();
+            printf("Seleziona l'isola di arrivo (da 1 a %d): ", ISLAND_NUMBER);
+            endIslandIndex = getInt(ISLAND_NUMBER);
+            /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
+            if (endIslandIndex <= 0) {
+                printf("Scelta non corretta! Riprovare.\n");
+                programPause();
+            }
+        } while (endIslandIndex <= 0);
+        /* A questo punto decrementiamo endIslandIndex per poterlo utilizzare correttamente nell'algoritmo */
+        endIslandIndex--;
+
+        /* Calcoliamo il peso totale del camion */
+        truckWeight = getDriverTotalWeight(driver);
+        
+        /* Calcoliamo, se esiste, un percorso dall'isola di partenza all'isola di arrivo */
+        deliveryPath = graph_findShortestPath(archipelago, startIslandIndex, endIslandIndex, truckWeight);
+
+        if (deliveryPath == NULL) {
+            printf("Mi dispiace, non esiste un percorso che vada da %d a %d.\n", startIslandIndex+1, endIslandIndex+1);
+            programPause();
+        }
+        else {
+            printf("Per arrivare da %d a %d, puoi effettuare questo percorso:\n", startIslandIndex+1, endIslandIndex+1);
+            edge_printPath(deliveryPath);
+            programPause();
+        }
+
+        /* A questo punto diamo la scelta all'utente se continuare o meno */
+        do {
+            clearScreen();
+            printf("Prego, selezionare un'opzione:\n");
+            printf("1. CERCARE UN NUOVO PERCORSO DI CONSEGNA\n");
+            printf("2. CAMBIARE TIPOLOGIA DI SCENARIO\n");
+            printf("3. USCIRE DAL MENU DI CONSEGNA\n");
+            printf("\nLa tua scelta: ");
+            userChoice = getInt(3);
+
+            switch (userChoice)
+            {
+            case 1:
+                /* In realtà qui non c'è molto da fare, le variabili restano immutate */
+                break;
+            
+            case 2:
+                /* Il ciclo verrà ripetuto interamente, creando quindi un nuovo grafo */
+                scenarioChosen = false;
+                /* E' necessario quindi liberare lo heap dal grafo precedente */
+                graph_free(archipelago);
+                break;
+
+            case 3: 
+                running = false;
+                printf("Ora tornerai al menu principale, premi INVIO per continuare.\n");
+                programPause();
+                break;
+
+            default:
+                printf("Scelta non corretta! Riprovare.\n");
+                programPause();
+                break;
+            }
+        } while (running);
+    } while (running);
+
+    
 }
