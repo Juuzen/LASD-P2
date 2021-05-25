@@ -117,19 +117,19 @@ Edge edge_findNode(Edge list, int source, int dest) {
         return list;
     return edge_findNode(list->next, source, dest);
 }
-void edge_printPath(Edge list) {
+void edge_printPath(Edge list, int offset) {
     if (list == NULL) {
         printf("///\n");
         return;
     }
 
     if (list->next != NULL) {
-        printf("%d -> ", list->sourceIndex);
-        edge_printPath(list->next);
+        printf("%d -> ", list->sourceIndex + offset);
+        edge_printPath(list->next, offset);
         return;
     }
 
-    printf("%d -> %d\n", list->sourceIndex, list->destIndex);
+    printf("%d -> %d\n", list->sourceIndex + offset, list->destIndex + offset);
 }
 void edge_debugPrintNode(Edge node) {
     if (node != NULL) 

@@ -427,7 +427,7 @@ void driverDeliveryMenu(Driver driver) {
         }
         else {
             printf("Per arrivare da %d a %d, puoi effettuare questo percorso:\n", startIslandIndex+1, endIslandIndex+1);
-            edge_printPath(deliveryPath);
+            edge_printPath(deliveryPath, 1);
             programPause();
         }
 
@@ -445,6 +445,7 @@ void driverDeliveryMenu(Driver driver) {
             {
             case 1:
                 repeating = false;
+                edge_freeList(deliveryPath);
                 break;
             
             case 2:
@@ -453,12 +454,15 @@ void driverDeliveryMenu(Driver driver) {
                 repeating = false;
                 /* E' necessario quindi liberare lo heap dal grafo precedente */
                 graph_free(archipelago);
+                edge_freeList(deliveryPath);
                 break;
 
             case 3: 
                 repeating = false;
                 running = false;
-                printf("Ora tornerai al menu principale, premi INVIO per continuare.\n");
+                graph_free(archipelago);
+                edge_freeList(deliveryPath);
+                printf("Ora tornerai al menu principale.\n");
                 programPause();
                 break;
 
