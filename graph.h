@@ -40,6 +40,7 @@ Edge edge_removeNode(Edge list, int source, int dest);
 Edge edge_findNode(Edge list, int source, int dest);
 Edge edge_headInsert(Edge list, int source, int dest, int weight);
 Edge edge_tailInsert(Edge list, int source, int dest, int weight);
+void edge_printPath(Edge list);
 void edge_debugPrintNode(Edge node);
 void edge_debugPrintList(Edge list);
 

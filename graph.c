@@ -117,6 +117,20 @@ Edge edge_findNode(Edge list, int source, int dest) {
         return list;
     return edge_findNode(list->next, source, dest);
 }
+void edge_printPath(Edge list) {
+    if (list == NULL) {
+        printf("///\n");
+        return;
+    }
+
+    if (list->next != NULL) {
+        printf("%d -> ", list->sourceIndex);
+        edge_printPath(list->next);
+        return;
+    }
+
+    printf("%d -> %d\n", list->sourceIndex, list->destIndex);
+}
 void edge_debugPrintNode(Edge node) {
     if (node != NULL) 
         printf("%d -> %d (W: %d)\n", node->sourceIndex, node->destIndex, node->weight);
