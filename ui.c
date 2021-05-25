@@ -192,6 +192,7 @@ void driverMenu(Driver driver) {
         case 3:
             printf("Funzione non ancora implementata!\n");
             programPause();
+            break;
 
         case 4:
             running = false;
@@ -347,7 +348,7 @@ void showCartInfo(Driver driver, PtrOrder cart) {
 /* Menu di gestione delle consegne */
 void driverDeliveryMenu(Driver driver) {
     int userChoice;
-    bool running = true, scenarioChosen = false;
+    bool running = true, scenarioChosen = false, repeating = true;
 
     int startIslandIndex, endIslandIndex, truckWeight;
     Graph archipelago = NULL;
@@ -443,17 +444,19 @@ void driverDeliveryMenu(Driver driver) {
             switch (userChoice)
             {
             case 1:
-                /* In realtà qui non c'è molto da fare, le variabili restano immutate */
+                repeating = false;
                 break;
             
             case 2:
                 /* Il ciclo verrà ripetuto interamente, creando quindi un nuovo grafo */
                 scenarioChosen = false;
+                repeating = false;
                 /* E' necessario quindi liberare lo heap dal grafo precedente */
                 graph_free(archipelago);
                 break;
 
             case 3: 
+                repeating = false;
                 running = false;
                 printf("Ora tornerai al menu principale, premi INVIO per continuare.\n");
                 programPause();
@@ -464,7 +467,7 @@ void driverDeliveryMenu(Driver driver) {
                 programPause();
                 break;
             }
-        } while (running);
+        } while (repeating);
     } while (running);
 
     
