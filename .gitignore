@@ -6,3 +6,7 @@ main
 unit-test.c
 *.txt
 *.out
+
+lasdp.log
+
+*.isl
