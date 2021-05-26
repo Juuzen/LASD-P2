@@ -71,7 +71,9 @@ PtrCatalogue retrieveItemsFromCatalogueFile(char *catalogueFilename){
 }
 
 void printSingleItem(Item item) {
-    printf("\n\tCode:%d\n\tLabel: %s\n\tSpecific weight: %d\n", item.codProduct, item.itemLabel, item.specificWeight);
+    printf("Nome prodotto: %s\n", item.itemLabel);
+    printf("Codice prodotto: %d\n", item.codProduct);
+    printf("Peso per singola unita': %d kg\n\n", item.specificWeight);
 }
 
 PtrCatalogue createNodeCatalogue(Item item){
@@ -94,11 +96,9 @@ PtrCatalogue insertTail(PtrCatalogue catalogue, PtrCatalogue item) {
 }
 
 void printItemList(PtrCatalogue list){
-
-    printf("Product List...\n");
-    while(list!=NULL){
+    if (list != NULL) {
         printSingleItem(list->item);
-        list = list->next;
+        printItemList(list->next);
     }
 }
 

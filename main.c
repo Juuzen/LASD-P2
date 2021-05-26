@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include "ui.h"
-#include "utils.h"
 
 int main() {
-    mainMenu();
-    //utilsDebugTest();
+    projectRun();
     return 0;
 }
