@@ -46,7 +46,7 @@ void projectRun() {
             break;
 
         default: /* Caso di default (non dovrebbe mai essere eseguito, data la presenza di getInt */
-            //TODO: chiamare logger, non si dovrebbe essere qui
+            logMessage(METHOD_PROJECT_RUN, LOG_LEVEL_ERROR, "Unreachable end");
             printf("Scelta non corretta! Riprovare\n");
             programPause();
         }
@@ -81,7 +81,7 @@ void authenticationMenu() {
             }
             else {
                 printf("Non e' stato possibile recuperare le informazioni del driver, riprovare piu' tardi...\n");
-                //TODO: Chiamare logger
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Error retrieving driver info");
                 
             }
             running = false; // Per evitare che venga ripetuta l'autenticazione dopo essere usciti
@@ -96,9 +96,17 @@ void authenticationMenu() {
             switch (userChoice){
             case 1: // Non è necessario fare nulla nel caso si voglia ripetere con l'autenticazione
                 break;
+
+            case 2:
+                running = false;
+                clearScreen();
+                printTitle();
+                printf("Arrivederci!\n");
+                programPause();
+                break;
             
             default:
-                //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Un-considered choice");
                 running = false;
                 break;
             }
@@ -140,9 +148,16 @@ void registrationMenu() {
                 switch (userChoice) {
                 case 1: /* Non è necessario fare nulla nel caso si voglia ripetere l'autenticazione */
                     break;
+
+                    case 2:
+                        clearScreen();
+                        printTitle();
+                        printf("Arrivederci!\n");
+                        programPause();
+                        running = false;
                 
                 default:
-                    //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                    logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Unattended case");
                     running = false;
                     break;
                 }
@@ -168,9 +183,7 @@ void registrationMenu() {
                         programPause();
                     }
                 } while (weight <= 0);
-                
 
-                //FIXME: Questa struct driver è un po' ridondante, rimuoverla?
                 Driver driver;
                 strcpy(driver.driverCode, driverCode);
                 driver.truckWeight = weight;
@@ -182,7 +195,7 @@ void registrationMenu() {
                 break;
 
             default:
-                //TODO: chiamare logger, non si dovrebbe essere qui
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "unreachable end");
                 printf("Vi e' stato un errore nella registrazione. Tornerai al menu principale.\n");
                 programPause();
                 running = false;
@@ -233,10 +246,10 @@ void driverMenu(Driver driver) {
             break;
 
         default:
-            printf("Vi e' stato un errore nella lettura dell'input, verrai disconnesso.\n"); 
+            printf("Vi e' stato un errore nella lettura dell'input, verrai disconnesso.\n");
+            logMessage(METHOD_DRIVER_MENU, LOG_LEVEL_ERROR, "Unreachable end");
             running = false;
             programPause();
-            //TODO: chiamare logger, non si dovrebbe essere qui
         }
     } while (running);
 }
@@ -291,7 +304,7 @@ void driverShopMenu(Driver* driver) {
                 break;
 
             default: /* Errore */
-                //TODO: Chiamare logger, non ci si dovrebbe trovare qui
+                logMessage(METHOD_DRIVER_SHOP_MENU, LOG_LEVEL_ERROR, "unreachable end");
                 printf("Errore nella gestione dell'input. Tornerai ora al menu precedente.\n");
                 running = false;
                 programPause();
@@ -324,7 +337,7 @@ PtrOrder addCartItemMenu(PtrOrder cart, PtrCatalogue catalogue) {
                 break;
 
             default:
-                //TODO: chiamare logger, non ci si dovrebbe trovare qui
+                logMessage("addCartItemMenu()", LOG_LEVEL_ERROR, "unreachable end");
                 running = false;
                 break;
         }
@@ -366,7 +379,7 @@ PtrOrder removeCartItemMenu(PtrOrder cart) {
                     break;
 
                 default:
-                    //TODO: inserire logger, non ci si dovrebbe trovare qui
+                    logMessage("removeCartItemMenu()", LOG_LEVEL_ERROR, "unreachable end");
                     running = false;
                     break;
             }
@@ -520,7 +533,7 @@ void driverDeliveryMenu(Driver driver) {
                     break;
 
                 default:
-                    //TODO: chiamare logger, non ci si dovrebbe trovare qui
+                    logMessage("driverDeliveryMenu()", LOG_LEVEL_ERROR, "unreachable end");
                     printf("Scelta sbagliata! Riprovare.\n");
                     programPause();
             }
@@ -531,7 +544,6 @@ void driverDeliveryMenu(Driver driver) {
         /* Prendiamo l'input per l'isola di partenza */
         do {
             printf("Seleziona l'isola di partenza (da 1 a %d): ", ISLAND_NUMBER);
-            //TODO: fare funzione che associa gli interi alle lettere dell'alfabeto
             startIslandIndex = getInt(ISLAND_NUMBER);
             /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
             if (startIslandIndex <= 0) {
@@ -547,7 +559,6 @@ void driverDeliveryMenu(Driver driver) {
         /* Prendiamo l'input per l'isola di arrivo */
         do {
             printf("Seleziona l'isola di arrivo (da 1 a %d): ", ISLAND_NUMBER);
-            //TODO: fare funzione che associa gli interi alle lettere dell'alfabeto
             endIslandIndex = getInt(ISLAND_NUMBER);
             /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
             if (endIslandIndex <= 0) {
@@ -617,7 +628,7 @@ void driverDeliveryMenu(Driver driver) {
                 break;
 
             default:
-                //TODO: chiamare logger, non ci si dovrebbe trovare qui
+                logMessage("driverDeliveryMenu()", LOG_LEVEL_ERROR, "unreachable end");
                 printf("Scelta non corretta! Riprovare.\n");
                 programPause();
                 break;

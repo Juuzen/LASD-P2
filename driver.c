@@ -81,7 +81,6 @@ int writeDriverInfoToFile(Driver driver, char *filename) {
         return -2;
     }
 
-    //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
     int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
 
     if (printFileResult < 0) {

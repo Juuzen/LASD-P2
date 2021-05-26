@@ -27,6 +27,9 @@
 
 /* Used in: ui.c */
 #define METHOD_REGISTRATION_MENU "registrationMenu()"
+#define METHOD_PROJECT_RUN "projectRun()"
+#define METHOD_DRIVER_MENU "driverMenu()"
+#define METHOD_DRIVER_SHOP_MENU "driverShopMenu()"
 
 #define LOG_LEVEL_INFO "INFO"
 #define LOG_LEVEL_DEBUG "DEBUG"
