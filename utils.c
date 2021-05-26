@@ -5,6 +5,19 @@
 #include "logger.h"
 #include "const.h"
 
+void printTitle() {
+    printf("::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
+    printf("'####::::::::::'########::::'###::::'########::'######::\n");
+    printf(". ##::::::::::: ##.....::::'## ##:::... ##..::'##... ##:\n");
+    printf(": ##::::::::::: ##::::::::'##:. ##::::: ##:::: ##:::..::\n");
+    printf(": ##::'#######: ######:::'##:::. ##:::: ##::::. ######::\n");
+    printf(": ##::........: ##...:::: #########:::: ##:::::..... ##:\n");
+    printf(": ##::::::::::: ##::::::: ##.... ##:::: ##::::'##::: ##:\n");
+    printf("'####:::::::::: ########: ##:::: ##:::: ##::::. ######::\n");
+    printf("....:::::::::::........::..:::::..:::::..::::::......:::\n");
+    printf("\n\n");
+}
+
 void programPause() {
     printf("Premi INVIO per continuare...");
     getchar();
@@ -39,7 +52,10 @@ int getInt(int maxRange) {
     scanfCheck = (scanf("%d", &tmp));
     flushStdin();
     if (scanfCheck == 1) {
-        if (maxRange == 0) input = tmp;
+        if (maxRange == 0) {
+            if (tmp > 0) input = tmp;
+            else input = 0;
+        }
         else if ((tmp > 0) && (tmp <= maxRange)) {
             input = tmp;
         }
@@ -49,19 +65,15 @@ int getInt(int maxRange) {
     return input;
 }
 
-void utilsDebugTest() {
-    int input = -1;
-    do {
-        clearScreen();
-        printf("Scegli un numero da 1 a 10: ");
-        input = getInt(10);
-        if (input <= 0) {
-            printf("Scelta sbagliata, riprovare\n");
-            programPause();
-        }
-    } while (input <= 0);
+char * getString(int maxChar) {
+    int i = 0;
+    char c;
+    char * scan = (char *) calloc(1, maxChar * sizeof(char));
+    while (((c = fgetc(stdin)) != EOF) && c != '\n' && i < maxChar) {
+        scan[i] = c;
+        i++;
+    }
+    //flushStdin();
+    return scan;
 
-    
-    printf("Il numero scelto e': %d\n", input);
-    programPause();
 }
