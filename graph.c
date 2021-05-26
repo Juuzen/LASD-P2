@@ -140,16 +140,6 @@ Edge graph_findShortestPath(Graph G, int startIndex, int endIndex, int truckWeig
     return NULL;
 }
 
-/* Stampa in stdout un grafo */
-void graph_debugPrint(Graph G) {
-    if (G != NULL) {
-        for (int i = 0; i < G->nodeCount; i++) {
-            if (G->adjList[i] != NULL) edge_debugPrintList(G->adjList[i]);
-            else printf("Il nodo %d non ha nodi adiacenti.\n", i);
-        }
-    }
-}
-
 
 
 /* ----- FUNZIONI CREAZIONE ARCIPELAGO ----- */

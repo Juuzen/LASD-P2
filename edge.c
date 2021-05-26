@@ -58,6 +58,7 @@ Edge edge_headInsert(Edge list, int source, int dest, int weight) {
     return E;
 }
 
+/* Stampa su stdout una lista di elementi di Edge */
 void edge_printPath(Edge list, int offset) {
     if (list == NULL) {
         printf("///\n");
@@ -73,15 +74,3 @@ void edge_printPath(Edge list, int offset) {
     printf("%d -> %d\n", list->sourceIndex + offset, list->destIndex + offset);
 }
 
-void edge_debugPrintNode(Edge node) {
-    if (node != NULL) 
-        printf("%d -> %d (W: %d)\n", node->sourceIndex, node->destIndex, node->weight);
-    
-}
-
-void edge_debugPrintList(Edge list) {
-    if (list != NULL) {
-        edge_debugPrintNode(list);
-        edge_debugPrintList(list->next);
-    }
-}
