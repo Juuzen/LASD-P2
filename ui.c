@@ -491,10 +491,6 @@ PtrOrder removeItemFromCart(PtrOrder cart) {
     return cart;
 }
 
-
-
-
-
 /* Menu di gestione delle consegne */
 void driverDeliveryMenu(Driver driver) {
     int userChoice;

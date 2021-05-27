@@ -30,6 +30,9 @@
 #define METHOD_PROJECT_RUN "projectRun()"
 #define METHOD_DRIVER_MENU "driverMenu()"
 #define METHOD_DRIVER_SHOP_MENU "driverShopMenu()"
+#define METHOD_DRIVER_DELIVERY_MENU "driverDeliveryMenu()"
+#define METHOD_REMOVE_ITEM_FROM_CART "removeItemFromCart()"
+#define METHOD_ "addItemToCart()"
 
 #define LOG_LEVEL_INFO "INFO"
 #define LOG_LEVEL_DEBUG "DEBUG"
