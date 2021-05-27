@@ -60,7 +60,7 @@ Order order_removeItem (Order list, int itemCode) {
 Order order_new (Item item, int quantity) {
     logMessage("order_new()", LOG_LEVEL_DEBUG, "starting order creation");
     Order order = NULL;
-    order = (Order) malloc (1*sizeof(order));
+    order = (Order) malloc (sizeof(order));
     if(order!=NULL) {
         logMessage("order_new()", LOG_LEVEL_DEBUG, "order not null");
         order->item = item;
@@ -105,7 +105,7 @@ Order order_mergeInsert (Order list, Order order) {
     if (list->item.code == order->item.code) {
         list->quantity += order->quantity;
         /* Questo elemento può essere eliminato dal momento il suo contenuto viene incluso nella lista */
-        order_freeNode(order);
+        //order_freeNode(order);
         return list;
     }
     list->next = order_mergeInsert (list->next, order);
