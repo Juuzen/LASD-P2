@@ -62,13 +62,15 @@ void ui_authenticationMenu() {
     int loginCheck, userChoice, length;
     bool running = true;
 
-    char *driverCode, *driverPassword;
+    char driverCode[MAX_SIZE_USERNAME];
+    char driverPassword[MAX_SIZE_PASSWORD];
     do {
         do {
+
             clearScreen();
             printTitle();
             printf("Inserisci il tuo codice driver:\n");
-            driverCode = getString(MAX_SIZE_USERNAME);
+            scanf("%s", driverCode);
             length = strlen(driverCode);
             if (length == 0) {
                 printf("L'username non puo' essere una stringa vuota! Riprova.\n");
@@ -80,7 +82,7 @@ void ui_authenticationMenu() {
             clearScreen();
             printTitle();
             printf("Inserisci la tua password:\n");
-            driverPassword = getString(MAX_SIZE_PASSWORD);
+            scanf("%s", driverPassword);
             length = strlen(driverPassword);
             if (length == 0) {
                 printf("La password non puo' essere una stringa vuota! Riprova.\n");
@@ -129,16 +131,14 @@ void ui_authenticationMenu() {
                 break;
             }
         }
-
-        free(driverCode);
-        free(driverPassword);
     } while (running);
 }
 
 /* Menu di registrazione */
 void ui_registrationMenu() {
     int weight, registrationCheck, userChoice, length;
-    char *driverCode, *driverPassword;
+    char driverCode[MAX_SIZE_USERNAME];
+    char driverPassword[MAX_SIZE_PASSWORD];
     bool running = true;
 
     do {
@@ -148,7 +148,7 @@ void ui_registrationMenu() {
             clearScreen();
             printTitle();
             printf("Inserisci il tuo codice driver:\n");
-            driverCode = getString(MAX_SIZE_USERNAME);
+            scanf("%s", driverCode);
             length = strlen(driverCode);
             if (length == 0) {
                 printf("L'username non puo' essere una stringa vuota! Riprova.\n");
@@ -160,7 +160,7 @@ void ui_registrationMenu() {
             clearScreen();
             printTitle();
             printf("Inserisci la tua password:\n");
-            driverPassword = getString(MAX_SIZE_PASSWORD);
+            scanf("%s", driverPassword);
             length = strlen(driverPassword);
             if (length == 0) {
                 printf("La password non puo' essere una stringa vuota! Riprova.\n");
@@ -234,9 +234,6 @@ void ui_registrationMenu() {
                 programPause();
                 running = false;
         }
-    
-        free(driverCode);
-        free(driverPassword);
     } while (running);
 }
 
@@ -620,10 +617,12 @@ Order ui_addItemToCart(Order cart, Catalogue catalogue) {
         if (catalogueItem == NULL) {
             printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
             programPause();            
+        } else {
+            itemFound = true;
+            logMessage("ui.findItem()", LOG_LEVEL_DEBUG, "found item");
         }
-        
-        else itemFound = true;
     } while (!itemFound);
+
 
     do {
         printf("Inserisci la quantita' di prodotto da inserire nel carrello:\n");
@@ -636,7 +635,7 @@ Order ui_addItemToCart(Order cart, Catalogue catalogue) {
 
     orderItem = order_new(catalogueItem->item, orderQuantity);
 
-    cart = order_mergeInsert (cart, orderItem);
+    cart = order_mergeInsert(cart, orderItem);
     return cart;
 }
 

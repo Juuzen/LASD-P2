@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "order.h"
+#include "logger.h"
 
 /*  Dealloca un elemento Order. */
 void order_freeNode (Order node) {
@@ -57,13 +58,15 @@ Order order_removeItem (Order list, int itemCode) {
  *  Order order: elemento Order correttamente allocato
  */
 Order order_new (Item item, int quantity) {
-    Order order;
-    order = (Order)calloc(1, sizeof (order));
+    logMessage("order_new()", LOG_LEVEL_DEBUG, "starting order creation");
+    Order order = NULL;
+    order = (Order) malloc (1*sizeof(order));
     if(order!=NULL) {
+        logMessage("order_new()", LOG_LEVEL_DEBUG, "order not null");
         order->item = item;
         order->quantity = quantity;
         order->next = NULL;
-    }
+    } else logMessage("ordernew()", LOG_LEVEL_DEBUG, "order null");
     return order;
 }
 
@@ -77,12 +80,15 @@ Order order_mergeLists (Order primaryList, Order secondaryList) {
     /* Fintanto che secondaryList non è vuota */
     while (secondaryList != NULL) {
         /* Creo un duplicato del nodo corrente di secondaryList */
+        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "creating duplicate");
         tmpOrder = order_new(secondaryList->item, secondaryList->quantity);
 
         /* Inserisco tale duplicato in primaryList */
+        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "inserting duplicate");
         primaryList = order_mergeInsert(primaryList, tmpOrder);
 
         /* Procedo col prossimo elemento di secondaryList */
+        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "going further");
         secondaryList = secondaryList->next;
     }
 

@@ -23,6 +23,7 @@ Catalogue catalogue_new(Item item){
  *  Catalogue list: la lista correttamente modificata.
  */
 Catalogue catalogue_tailInsert (Catalogue catalogue, Catalogue item) {
+    logMessage("tailInsert()", LOG_LEVEL_DEBUG, "inserting item in tail");
     if (catalogue == NULL) return item;
     catalogue->next = catalogue_tailInsert(catalogue->next, item);
     return catalogue;
@@ -53,18 +54,15 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
     }
 
     while (feof(catalogueFile) == 0)  {
-        Item item = parseItemResilient(catalogueFile);
-        Catalogue item_c = catalogue_new(item);
-        catalogue = catalogue_tailInsert(catalogue, item_c);
-//        char localProductLabel[MAX_ITEM_LABEL_SIZE];
-//        int localSpecificWeight, localProductCode;
-//        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, parseStringTest(), &localSpecificWeight);
-//
-//        if (scannedElements == 3) {
-//            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
-//            Catalogue item = catalogue_new(genericItem);
-//            catalogue = catalogue_tailInsert(catalogue, item);
-//        }
+        char localProductLabel[MAX_ITEM_LABEL_SIZE];
+        int localSpecificWeight, localProductCode;
+        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, localProductLabel, &localSpecificWeight);
+
+        if (scannedElements == 3) {
+            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
+            Catalogue item = catalogue_new(genericItem);
+            catalogue = catalogue_tailInsert(catalogue, item);
+        }
     }
     fclose(catalogueFile);
 
@@ -78,6 +76,7 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
  */
 Catalogue catalogue_findItem(Catalogue list, int itemCode)
 {
+    logMessage("findItem()", LOG_LEVEL_DEBUG, "searching for item");
     if (list == NULL) return NULL;
     if (list->item.code == itemCode) return list;
     return catalogue_findItem(list->next, itemCode);
@@ -154,7 +153,7 @@ Item parseItemResilient(FILE *inputFile) {
     while (c != '\t') {
         c = getc(inputFile);
         parsedString[index] = c;
-        index ++;
+        index++;
     }
 
     parsedString[index++] = '\0';

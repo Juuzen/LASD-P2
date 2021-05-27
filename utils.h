@@ -6,6 +6,6 @@ void programPause();
 void clearScreen();
 void flushStdin();
 int getInt(int maxRange);
-char* getString(int maxChar);
+char* getString(size_t maxChar);
 
 #endif

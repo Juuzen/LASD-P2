@@ -66,10 +66,10 @@ int getInt(int maxRange) {
     return input;
 }
 
-char * getString(int maxChar) {
+char * getString(size_t maxChar) {
     int i = 0;
     char c;
-    char * scan = (char *) calloc(1, maxChar * sizeof(char));
+    char * scan = (char *) malloc(maxChar * sizeof(char));
     while (((c = fgetc(stdin)) != EOF) && c != '\n' && i < maxChar) {
         scan[i] = c;
         i++;
