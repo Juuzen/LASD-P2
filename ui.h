@@ -4,7 +4,7 @@
 #include "catalogue.h"
 #include "driver.h"
 
-/* Funzioni di interfaccia grafica */
+/* ----- Funzioni di interfaccia grafica ----- */
 void projectRun();
 void ui_authenticationMenu();
 void ui_registrationMenu();
@@ -19,7 +19,7 @@ void ui_showDriverInfoMenu(Driver driver);
 
 void ui_deliveryMenu(Driver driver);
 
-/* Funzioni di appoggio */
+/* ----- Funzioni di appoggio ----- */
 Order ui_addItemToCart(Order cart, Catalogue catalogue);
 Order ui_removeItemFromCart(Order cart);
 

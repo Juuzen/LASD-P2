@@ -56,19 +56,34 @@ void projectRun() {
 
 /* Menu di autenticazione */
 void ui_authenticationMenu() {
-    int loginCheck, userChoice;
+    int loginCheck, userChoice, length;
     bool running = true;
 
     char *driverCode, *driverPassword;
     do {
-        clearScreen();
-        printTitle();
-        printf("Inserisci il tuo codice driver:\n");
-        //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
-        driverCode = getString(MAX_SIZE_USERNAME);
-        printf("\nInserisci la tua password:\n");
-        //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
-        driverPassword = getString(MAX_SIZE_PASSWORD);
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci il tuo codice driver:\n");
+            driverCode = getString(MAX_SIZE_USERNAME);
+            length = strlen(driverCode);
+            if (length == 0) {
+                printf("L'username non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
+
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci la tua password:\n");
+            driverPassword = getString(MAX_SIZE_PASSWORD);
+            length = strlen(driverPassword);
+            if (length == 0) {
+                printf("La password non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
 
         loginCheck = auth_login(driverCode, driverPassword, DRIVER_LOGIN_DB);
 
@@ -120,19 +135,36 @@ void ui_authenticationMenu() {
 
 /* Menu di registrazione */
 void ui_registrationMenu() {
-    int weight, registrationCheck, userChoice;
+    int weight, registrationCheck, userChoice, length;
     char *driverCode, *driverPassword;
     bool running = true;
 
     do {
         clearScreen();
         printTitle();
-        printf("Inserisci username:\n");
-        //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
-        driverCode = getString(MAX_SIZE_USERNAME);
-        printf("\nInserisci password:\n");
-        //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
-        driverPassword = getString(MAX_SIZE_PASSWORD);
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci il tuo codice driver:\n");
+            driverCode = getString(MAX_SIZE_USERNAME);
+            length = strlen(driverCode);
+            if (length == 0) {
+                printf("L'username non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
+
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci la tua password:\n");
+            driverPassword = getString(MAX_SIZE_PASSWORD);
+            length = strlen(driverPassword);
+            if (length == 0) {
+                printf("La password non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
 
         registrationCheck = auth_register(driverCode, driverPassword, DRIVER_LOGIN_DB);
         switch (registrationCheck) {
