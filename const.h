@@ -4,6 +4,7 @@
 /* Used in: productCatalogue.c */
 #define MAX_ITEM_LABEL_SIZE 21
 #define METHOD_CATALOGUE_RETRIEVE_LIST_FROM_FILE "catalogue_retrieveListFromFile()"
+#define METHOD_CATALOGUE_MOCK_FILE "catalogue_mockCatalogueFile()"
 
 /* Used in: auth.c */
 #define MAX_SIZE_USERNAME 12
@@ -23,7 +24,10 @@
 #define MAX_LENGTH_DRIVER_CODE 10
 
 /* Used in: logger.c */
-#define LOG_FILE "lasdp.log"
+#define LOG_FILE "i-eats.log"
+#define LOG_LEVEL_INFO "INFO"
+#define LOG_LEVEL_DEBUG "DEBUG"
+#define LOG_LEVEL_ERROR "ERROR"
 
 /* Used in: ui.c */
 #define METHOD_REGISTRATION_MENU "registrationMenu()"
@@ -33,10 +37,6 @@
 #define METHOD_DRIVER_DELIVERY_MENU "driverDeliveryMenu()"
 #define METHOD_REMOVE_ITEM_FROM_CART "removeItemFromCart()"
 #define METHOD_ "addItemToCart()"
-
-#define LOG_LEVEL_INFO "INFO"
-#define LOG_LEVEL_DEBUG "DEBUG"
-#define LOG_LEVEL_ERROR "ERROR"
 
 /* Used in: project.c */
 #define DRIVER_INFO_DB "driver-info.isl"

@@ -15,6 +15,9 @@
 
 /* Entry point del progetto */
 void projectRun() {
+    // Mock del file del catalogo prodotti nel caso in cui non esista
+    catalogue_mockCatalogueFile();
+
     int userChoice;
     bool running = true;
 
@@ -409,7 +412,7 @@ Order ui_removeCartItemMenu(Order cart) {
                     break;
 
                 default:
-                    logMessage("removeCartItemMenu()", LOG_LEVEL_ERROR, "unreachable end");
+                    logMessage(METHOD_REMOVE_ITEM_FROM_CART, LOG_LEVEL_ERROR, "Unreachable switch case");
                     running = false;
                     break;
             }
@@ -494,7 +497,7 @@ void ui_deliveryMenu(Driver driver) {
                     break;
 
                 default:
-                    logMessage("driverDeliveryMenu()", LOG_LEVEL_ERROR, "unreachable end");
+                    logMessage(METHOD_DRIVER_DELIVERY_MENU, LOG_LEVEL_ERROR, "Unreachable switch case");
                     printf("Scelta sbagliata! Riprovare.\n");
                     programPause();
             }
@@ -589,7 +592,7 @@ void ui_deliveryMenu(Driver driver) {
                 break;
 
             default:
-                logMessage("driverDeliveryMenu()", LOG_LEVEL_ERROR, "unreachable end");
+                logMessage(METHOD_DRIVER_DELIVERY_MENU, LOG_LEVEL_ERROR, "Unreachable switch case");
                 printf("Scelta non corretta! Riprovare.\n");
                 programPause();
                 break;

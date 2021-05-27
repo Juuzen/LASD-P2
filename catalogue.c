@@ -53,15 +53,18 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
     }
 
     while (feof(catalogueFile) == 0)  {
-        char localProductLabel[MAX_ITEM_LABEL_SIZE];
-        int localSpecificWeight, localProductCode;
-        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, localProductLabel, &localSpecificWeight);
-
-        if (scannedElements == 3) {
-            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
-            Catalogue item = catalogue_new(genericItem);
-            catalogue = catalogue_tailInsert(catalogue, item);
-        }
+        Item item = parseItemResilient(catalogueFile);
+        Catalogue item_c = catalogue_new(item);
+        catalogue = catalogue_tailInsert(catalogue, item_c);
+//        char localProductLabel[MAX_ITEM_LABEL_SIZE];
+//        int localSpecificWeight, localProductCode;
+//        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, parseStringTest(), &localSpecificWeight);
+//
+//        if (scannedElements == 3) {
+//            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
+//            Catalogue item = catalogue_new(genericItem);
+//            catalogue = catalogue_tailInsert(catalogue, item);
+//        }
     }
     fclose(catalogueFile);
 
@@ -107,9 +110,56 @@ void catalogue_freeList (Catalogue list) {
     }
 }
 
+/* Crea un mock del file di catalogo nel caso in cui esso non sia presente */
+void catalogue_mockCatalogueFile() {
+    FILE *catalogueFile = NULL;
 
+    /* Sanity check on file opening and existence */
+    catalogueFile = fopen(PRODUCT_CATALOGUE_DB, "r");
 
+    /* In case the file was not found on first try */
+    if (catalogueFile != NULL) {
+        fclose(catalogueFile);
+        return;
+    }
 
+    logMessage(METHOD_CATALOGUE_MOCK_FILE, LOG_LEVEL_INFO, "Catalogue db not found - Creating mock one");
+    catalogueFile = fopen(PRODUCT_CATALOGUE_DB, "w");
 
+    /* Mock section */
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 100, "Patate", 2);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 101, "Pasta", 1);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 102, "Cipolle", 1);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 103, "Birra", 7);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 104, "Vino", 8);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 105, "Pane", 10);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 106, "Patatine", 1);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 107, "Carne rossa", 5);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 108, "Carne bianca", 10);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 109, "Acqua", 12);
 
+    fclose(catalogueFile);
+    return;
+}
 
+Item parseItemResilient(FILE *inputFile) {
+    char c;
+    int index = 0;
+    char parsedString[MAX_ITEM_LABEL_SIZE];
+    int productCode;
+    int weight;
+
+    fscanf(inputFile, "%d\t", &productCode);
+
+    while (c != '\t') {
+        c = getc(inputFile);
+        parsedString[index] = c;
+        index ++;
+    }
+
+    parsedString[index++] = '\0';
+    fscanf(inputFile, "%d\n", &weight);
+    Item item = item_new(parsedString, weight, productCode);
+
+    return item;
+}

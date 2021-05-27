@@ -18,6 +18,8 @@ Catalogue catalogue_findItem (Catalogue list, int itemCode);
 void catalogue_print (Catalogue list);
 void catalogue_freeNode (Catalogue node);
 void catalogue_freeList (Catalogue list);
+void catalogue_mockCatalogueFile();
+Item parseItemResilient(FILE *file);
 
 
 #endif //LASD_P2_PRODUCTCATALOGUE_H
