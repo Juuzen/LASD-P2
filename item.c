@@ -17,5 +17,5 @@ Item item_new (char *itemLabel, int itemWeight, int itemCode) {
 void item_print(Item item) {
     printf("Nome prodotto: %s\n", item.label);
     printf("Codice prodotto: %d\n", item.code);
-    printf("Peso per singola unita': %d kg\n\n", item.weight);
+    printf("Peso per singola unita': %d kg\n", item.weight);
 }

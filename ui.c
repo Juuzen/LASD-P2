@@ -16,7 +16,7 @@
 /* Entry point del progetto */
 void projectRun() {
     // Mock del file del catalogo prodotti nel caso in cui non esista
-    catalogue_mockCatalogueFile();
+    //catalogue_mockCatalogueFile();
 
     int userChoice;
     bool running = true;
@@ -71,6 +71,7 @@ void ui_authenticationMenu() {
             printTitle();
             printf("Inserisci il tuo codice driver:\n");
             scanf("%s", driverCode);
+            flushStdin();
             length = strlen(driverCode);
             if (length == 0) {
                 printf("L'username non puo' essere una stringa vuota! Riprova.\n");
@@ -83,6 +84,7 @@ void ui_authenticationMenu() {
             printTitle();
             printf("Inserisci la tua password:\n");
             scanf("%s", driverPassword);
+            flushStdin();
             length = strlen(driverPassword);
             if (length == 0) {
                 printf("La password non puo' essere una stringa vuota! Riprova.\n");
@@ -149,6 +151,7 @@ void ui_registrationMenu() {
             printTitle();
             printf("Inserisci il tuo codice driver:\n");
             scanf("%s", driverCode);
+            flushStdin();
             length = strlen(driverCode);
             if (length == 0) {
                 printf("L'username non puo' essere una stringa vuota! Riprova.\n");
@@ -161,6 +164,7 @@ void ui_registrationMenu() {
             printTitle();
             printf("Inserisci la tua password:\n");
             scanf("%s", driverPassword);
+            flushStdin();
             length = strlen(driverPassword);
             if (length == 0) {
                 printf("La password non puo' essere una stringa vuota! Riprova.\n");
@@ -210,7 +214,9 @@ void ui_registrationMenu() {
             // Registrazione avvenuta con successo, si procede con il salvataggio dei dati del driver
             case 1:
                 do {
-                    printf("\nInserisci il peso del tuo veicolo per le consegne (in kg):\n");
+                    clearScreen();
+                    printTitle();
+                    printf("Inserisci il peso del tuo veicolo per le consegne (in kg):\n");
                     weight = getInt(0);
                     if (weight <= 0) {
                         printf("Il peso del camion deve essere un valore positivo! Riprova.\n");
@@ -223,7 +229,7 @@ void ui_registrationMenu() {
                 driver.truckWeight = weight;
 
                 driver_writeInfo(driver, DRIVER_INFO_DB);
-                printf("Registrazione completata con successo! Ora puo' tornare al menu principale.\n");
+                printf("\nRegistrazione completata con successo! Ora puo' tornare al menu principale.\n");
                 running = false;
                 programPause();
                 break;
@@ -288,7 +294,6 @@ void ui_driverMenu(Driver driver) {
 void ui_shopMenu(Driver* driver) {
     bool running = true;
     int userChoice = -1;
-
     Catalogue catalogue = catalogue_retrieveListFromFile(PRODUCT_CATALOGUE_DB);
     Order cart = NULL; 
     
@@ -350,7 +355,7 @@ void ui_shopMenu(Driver* driver) {
 Order ui_addCartItemMenu(Order cart, Catalogue catalogue) {
     int userChoice;
     bool running = true;
-                    
+    
     do {
         cart = ui_addItemToCart(cart, catalogue);
         printf("Articolo inserito! Seleziona un'opzione:\n");
@@ -361,7 +366,7 @@ Order ui_addCartItemMenu(Order cart, Catalogue catalogue) {
         switch (userChoice) {
             case 1:
                 break;
-                    
+                
             case 2:
                 running = false;
                 break;
