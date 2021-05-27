@@ -57,17 +57,16 @@ Order order_removeItem (Order list, int itemCode) {
  *  NULL: ERRORE in allocazione della memoria
  *  Order order: elemento Order correttamente allocato
  */
-Order order_new (Item item, int quantity) {
-    logMessage("order_new()", LOG_LEVEL_DEBUG, "starting order creation");
-    Order order = NULL;
-    order = (Order) malloc (sizeof(order));
-    if(order!=NULL) {
-        logMessage("order_new()", LOG_LEVEL_DEBUG, "order not null");
-        order->item = item;
-        order->quantity = quantity;
-        order->next = NULL;
+Order order_new (Item item, int orderQuantity) {
+    Order node = (Order) malloc (sizeof(order));
+
+    if (node != NULL) {
+        node->item = item;
+        node->quantity = orderQuantity;
+        node->next = NULL;
     } else logMessage("ordernew()", LOG_LEVEL_DEBUG, "order null");
-    return order;
+
+    return node;
 }
 
 /*  Unisce la lista secondaryList all'interno della lista primaryList.
@@ -125,8 +124,8 @@ int order_getTotalWeight (Order list) {
 void order_print(Order list) {
     if (list != NULL) {
         item_print(list->item);
+        printf("Quantita': %d\n", list->quantity);
         printf("Peso complessivo: %d kg\n\n", list->quantity * list->item.weight);
         order_print(list->next);
     }
 }
-

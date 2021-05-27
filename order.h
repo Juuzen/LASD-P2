@@ -15,11 +15,10 @@ void order_freeNode (Order node);
 void order_freeList (Order list);
 bool order_findItem (Order list, int itemCode);
 Order order_removeItem (Order list, int itemCode);
-Order order_new (Item item, int quantity);
+Order order_new (Item item, int orderQuantity);
 Order order_mergeLists (Order primaryList, Order secondaryList);
 Order order_mergeInsert (Order list, Order order);
 int order_getTotalWeight (Order list);
 void order_print(Order list);
-
 
 #endif //LASD_P2_ORDERMANAGEMENT_H
