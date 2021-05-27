@@ -3,14 +3,14 @@
 
 /* Used in: productCatalogue.c */
 #define MAX_ITEM_LABEL_SIZE 21
-#define METHOD_CATALOGUE_RETRIEVE_ITEM_FROM_FILE "retrieveItemsFromCatalogueFile()"
+#define METHOD_CATALOGUE_RETRIEVE_LIST_FROM_FILE "catalogue_retrieveListFromFile()"
 
-/* Used in: authlib.c */
+/* Used in: auth.c */
 #define MAX_SIZE_USERNAME 12
 #define MAX_SIZE_PASSWORD 12
-#define METHOD_AUTH_DO_LOGIN "doLogin()"
-#define METHOD_AUTH_DO_REGISTRATION "doRegistration()"
-#define METHOD_AUTH_CHECK_USERNAME "checkIfUsernameAlreadyExists()"
+#define METHOD_AUTH_LOGIN "auth_login()"
+#define METHOD_AUTH_REGISTRATION "auth_register()"
+#define METHOD_AUTH_CHECK_USERNAME "auth_checkExistingUsername()"
 
 /* Used in: graph.c*/
 #define NODELIMIT 20
