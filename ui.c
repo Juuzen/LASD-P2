@@ -6,10 +6,10 @@
 #include "ui.h"
 #include "graph.h"
 #include "const.h"
-#include "authlib.h"
+#include "auth.h"
 #include "driver.h"
-#include "productCatalogue.h"
-#include "orderManagement.h"
+#include "catalogue.h"
+#include "order.h"
 #include "utils.h"
 #include "logger.h"
 
@@ -31,11 +31,11 @@ void projectRun() {
 
         switch (userChoice) {
         case 1: /* Autenticazione utente */
-            authenticationMenu();
+            ui_authenticationMenu();
             break;
         
         case 2: /* Registrazione nuovo utente */
-            registrationMenu();
+            ui_registrationMenu();
             break;
         
         case 3: /* Uscita dal programma*/
@@ -55,7 +55,7 @@ void projectRun() {
 }
 
 /* Menu di autenticazione */
-void authenticationMenu() {
+void ui_authenticationMenu() {
     int loginCheck, userChoice;
     bool running = true;
 
@@ -70,14 +70,14 @@ void authenticationMenu() {
         //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
         driverPassword = getString(MAX_SIZE_PASSWORD);
 
-        loginCheck = doLogin(driverCode, driverPassword, DRIVER_LOGIN_DB);
+        loginCheck = auth_login(driverCode, driverPassword, DRIVER_LOGIN_DB);
 
         if (loginCheck == 1) {
             Driver driver;
-            int driverCheck = retrieveDriverInfoFromFile(driverCode, DRIVER_INFO_DB, &driver);
+            int driverCheck = driver_readInfo(driverCode, DRIVER_INFO_DB, &driver);
             if (driverCheck == 1) {
                 driver.truckLoad = NULL; //FIXME: Questa cosa deve andare all'inizializzazione del driver
-                driverMenu(driver);
+                ui_driverMenu(driver);
             }
             else {
                 printf("Non e' stato possibile recuperare le informazioni del driver, riprovare piu' tardi...\n");
@@ -119,7 +119,7 @@ void authenticationMenu() {
 }
 
 /* Menu di registrazione */
-void registrationMenu() {
+void ui_registrationMenu() {
     int weight, registrationCheck, userChoice;
     char *driverCode, *driverPassword;
     bool running = true;
@@ -134,7 +134,7 @@ void registrationMenu() {
         //FIXME: Vedere che succede con stringa vuota e, nel caso, fare in modo che l'utente inserisca la stringa
         driverPassword = getString(MAX_SIZE_PASSWORD);
 
-        registrationCheck = doRegistration(driverCode, driverPassword, DRIVER_LOGIN_DB);
+        registrationCheck = auth_register(driverCode, driverPassword, DRIVER_LOGIN_DB);
         switch (registrationCheck) {
             case -2:
                 clearScreen();
@@ -188,7 +188,7 @@ void registrationMenu() {
                 strcpy(driver.driverCode, driverCode);
                 driver.truckWeight = weight;
 
-                writeDriverInfoToFile(driver, DRIVER_INFO_DB);
+                driver_writeInfo(driver, DRIVER_INFO_DB);
                 printf("Registrazione completata con successo! Ora puo' tornare al menu principale.\n");
                 running = false;
                 programPause();
@@ -208,7 +208,7 @@ void registrationMenu() {
 }
 
 /* Menu personale del driver */
-void driverMenu(Driver driver) {
+void ui_driverMenu(Driver driver) {
     int userChoice;
     bool running = true; 
 
@@ -226,15 +226,15 @@ void driverMenu(Driver driver) {
 
         switch (userChoice){
         case 1:
-            driverShopMenu(&driver);
+            ui_shopMenu(&driver);
             break;
         
         case 2:
-            driverDeliveryMenu(driver);
+            ui_deliveryMenu(driver);
             break;
         
         case 3:
-            showDriverInfoMenu(driver);
+            ui_showDriverInfoMenu(driver);
             break;
 
         case 4:
@@ -255,12 +255,12 @@ void driverMenu(Driver driver) {
 }
 
 /* Menu di gestione del carrello */
-void driverShopMenu(Driver* driver) {
+void ui_shopMenu(Driver* driver) {
     bool running = true;
     int userChoice = -1;
 
-    PtrCatalogue catalogue = retrieveItemsFromCatalogueFile(PRODUCT_CATALOGUE_DB);
-    PtrOrder cart = NULL; 
+    Catalogue catalogue = catalogue_retrieveListFromFile(PRODUCT_CATALOGUE_DB);
+    Order cart = NULL; 
     
     do {
         clearScreen();
@@ -276,20 +276,20 @@ void driverShopMenu(Driver* driver) {
 
         switch (userChoice) {
             case 1: /* Aggiunta di un prodotto al carrello */
-                cart = addCartItemMenu(cart, catalogue);
+                cart = ui_addCartItemMenu(cart, catalogue);
                 break;
 
             case 2: /* Rimozione di un prodotto dal carrello */
-                cart = removeCartItemMenu(cart);
+                cart = ui_removeCartItemMenu(cart);
                 break;
 
             case 3: /* Visualizza lo stato del carrello */
-                showCartInfoMenu((*driver), cart);
+                ui_showCartInfoMenu((*driver), cart);
                 break;
 
             case 4: /* Finalizzazione ordine, aggiunta al carico del camion */
                 if (cart != NULL) {
-                    (*driver).truckLoad = mergeLists((*driver).truckLoad, cart);
+                    (*driver).truckLoad = order_mergeLists((*driver).truckLoad, cart);
                     printf("Carrello caricato con successo nel camion!\n");
                 }
                 else printf("Il carrello era vuoto, per cui non vi sono state modifiche al camion!\n");
@@ -312,17 +312,17 @@ void driverShopMenu(Driver* driver) {
     } while (running);
 
     /* Liberazione dell'heap */
-    freeCatalogueList(catalogue);
-    freeOrderList(cart);
+    catalogue_freeList(catalogue);
+    order_freeList(cart);
 }
 
 /* Menu di aggiunga elemento al carrello */
-PtrOrder addCartItemMenu(PtrOrder cart, PtrCatalogue catalogue) {
+Order ui_addCartItemMenu(Order cart, Catalogue catalogue) {
     int userChoice;
     bool running = true;
                     
     do {
-        cart = addItemToCart(cart, catalogue);
+        cart = ui_addItemToCart(cart, catalogue);
         printf("Articolo inserito! Seleziona un'opzione:\n");
         printf("1. Aggiungi un nuovo prodotto al carrello\n");
         printf("2. Torna indietro\n\n");
@@ -347,7 +347,7 @@ PtrOrder addCartItemMenu(PtrOrder cart, PtrCatalogue catalogue) {
 }
 
 /* Menu di rimozione elemento dal carrello */
-PtrOrder removeCartItemMenu(PtrOrder cart) {
+Order ui_removeCartItemMenu(Order cart) {
     int userChoice;
     bool running = true;
     
@@ -361,7 +361,7 @@ PtrOrder removeCartItemMenu(PtrOrder cart) {
         }
 
         else {
-            cart = removeItemFromCart(cart);
+            cart = ui_removeItemFromCart(cart);
 
             printf("Articolo rimosso! Seleziona un'opzione:\n");
             printf("1. Rimuovi un altro prodotto\n");
@@ -390,113 +390,44 @@ PtrOrder removeCartItemMenu(PtrOrder cart) {
 }
 
 /* Menu di visualizzazione informazioni carrello */
-void showCartInfoMenu(Driver driver, PtrOrder cart) {
+void ui_showCartInfoMenu(Driver driver, Order cart) {
     clearScreen();
     printTitle();
     printf("*** RIEPILOGO ORDINI ***\n");
     printf("Prodotti aggiunti al carrello:\n");
-    printOrderList(cart);
+    order_print(cart);
 
     if (driver.truckLoad != NULL) {
         printf("\nProdotti gia' caricati:\n");
-        printOrderList(driver.truckLoad);
+        order_print(driver.truckLoad);
     }
     printf("\n");
 
     printf("\n*** PESO TOTALE ORDINE ***\n\n");
 
-    int cartWeight = calculateOrderWeight(cart);
-    int truckWeight = getDriverTotalWeight(driver);
+    int cartWeight = order_getTotalWeight(cart);
+    int truckWeight = driver_getTotalWeight(driver);
     printf("Peso del carrello: %d\n", cartWeight);
     printf("Peso totale (provvisorio): %d\n", cartWeight + truckWeight); 
     programPause();
 }
 
 /* Menu per mostrare le info attuali del driver */
-void showDriverInfoMenu(Driver driver) {
+void ui_showDriverInfoMenu(Driver driver) {
     clearScreen();
     printTitle();
     printf("Username driver: %s\n", driver.driverCode);
     printf("Peso del camion: %d\n", driver.truckWeight);
     if (driver.truckLoad != NULL) {
         printf("Elementi caricati nel camion:\n");
-        printOrderList(driver.truckLoad);
-        printf("Peso totale del camion: %d\n", getDriverTotalWeight(driver));
+        order_print(driver.truckLoad);
+        printf("Peso totale del camion: %d\n", driver_getTotalWeight(driver));
     }
     programPause();
 }
 
-/* Funzione di supporto per aggiungere un prodotto al carrello */
-PtrOrder addItemToCart(PtrOrder cart, PtrCatalogue catalogue) {
-    int productCode;
-    int productQuantity;
-
-    PtrCatalogue catalogueItem = NULL;
-    PtrOrder orderItem = NULL;
-    bool itemFound = false;
-    do {
-        clearScreen();
-        printTitle();
-        printf("Gli elementi nel catalogo di questo periodo sono:\n");
-        printItemList(catalogue);
-        printf("Inserisci il codice del prodotto desiderato:\n");
-        productCode = getInt(0);
-        catalogueItem = findElement(catalogue, productCode);
-        if (catalogueItem == NULL) {
-            printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
-            programPause();            
-        }
-        
-        else itemFound = true;
-    } while (!itemFound);
-
-    do {
-        printf("Inserisci la quantita' di prodotto da inserire nel carrello:\n");
-        productQuantity = getInt(0);
-        if (productQuantity < 1) {
-            printf("La quantita' deve essere un numero positivo. Riprova!\n");
-            programPause();
-        } 
-    } while (productQuantity < 1);
-
-    orderItem = createNewOrder(catalogueItem->item, productQuantity);
-
-    cart = insertOrderMergeOrEnd(cart, orderItem);
-    return cart;
-}
-
-/* Funzione di supporto per rimuovere un prodotto dal carrello */
-PtrOrder removeItemFromCart(PtrOrder cart) {
-    if (cart != NULL) {
-        bool itemFound = false;
-        int userChoice;
-        do {
-            clearScreen();
-            printTitle();
-            printf("Il tuo carrello al momento contiene:\n");
-            printOrderList(cart);
-            printf("Inserisci il codice prodotto dell'elemento da rimuovere: ");
-            userChoice = getInt(0);
-
-            itemFound = findOrder(cart, userChoice);
-            if (!itemFound) {
-                printf("Il codice inserito non corrisponde a nessun elemento nel carrello! Riprova.\n");
-                programPause();
-            }
-        } while (!itemFound);
-    
-        cart = removeOrder(cart, userChoice);
-    }
-
-    return cart;
-}
-
-
-
-
-
 /* Menu di gestione delle consegne */
-void driverDeliveryMenu(Driver driver) {
+void ui_deliveryMenu(Driver driver) {
     int userChoice;
     bool running = true, scenarioChosen = false, repeating = true;
 
@@ -570,7 +501,7 @@ void driverDeliveryMenu(Driver driver) {
         endIslandIndex--;
 
         /* Calcoliamo il peso totale del camion */
-        truckWeight = getDriverTotalWeight(driver);
+        truckWeight = driver_getTotalWeight(driver);
         
         /* Calcoliamo, se esiste, un percorso dall'isola di partenza all'isola di arrivo */
         deliveryPath = graph_findShortestPath(archipelago, startIslandIndex, endIslandIndex, truckWeight);
@@ -637,7 +568,67 @@ void driverDeliveryMenu(Driver driver) {
     } while (running);
 }
 
+/* Funzione di supporto per aggiungere un prodotto al carrello */
+Order ui_addItemToCart(Order cart, Catalogue catalogue) {
+    int itemCode;
+    int orderQuantity;
 
+    Catalogue catalogueItem = NULL;
+    Order orderItem = NULL;
+    bool itemFound = false;
+    do {
+        clearScreen();
+        printTitle();
+        printf("Gli elementi nel catalogo di questo periodo sono:\n");
+        catalogue_print(catalogue);
+        printf("Inserisci il codice del prodotto desiderato:\n");
+        itemCode = getInt(0);
+        catalogueItem = catalogue_findItem(catalogue, itemCode);
+        if (catalogueItem == NULL) {
+            printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
+            programPause();            
+        }
+        
+        else itemFound = true;
+    } while (!itemFound);
 
+    do {
+        printf("Inserisci la quantita' di prodotto da inserire nel carrello:\n");
+        orderQuantity = getInt(0);
+        if (orderQuantity < 1) {
+            printf("La quantita' deve essere un numero positivo. Riprova!\n");
+            programPause();
+        } 
+    } while (orderQuantity < 1);
 
+    orderItem = order_new(catalogueItem->item, orderQuantity);
 
+    cart = order_mergeInsert (cart, orderItem);
+    return cart;
+}
+
+/* Funzione di supporto per rimuovere un prodotto dal carrello */
+Order ui_removeItemFromCart(Order cart) {
+    if (cart != NULL) {
+        bool itemFound = false;
+        int userChoice;
+        do {
+            clearScreen();
+            printTitle();
+            printf("Il tuo carrello al momento contiene:\n");
+            order_print(cart);
+            printf("Inserisci il codice prodotto dell'elemento da rimuovere: ");
+            userChoice = getInt(0);
+
+            itemFound = order_findItem(cart, userChoice);
+            if (!itemFound) {
+                printf("Il codice inserito non corrisponde a nessun elemento nel carrello! Riprova.\n");
+                programPause();
+            }
+        } while (!itemFound);
+    
+        cart = order_removeItem(cart, userChoice);
+    }
+
+    return cart;
+}

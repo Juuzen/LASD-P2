@@ -12,7 +12,8 @@
  *  per accomodare il carattere di terminazione '\0'
  */
 
-/*  Output:
+/*  Effettua il processo di accesso.
+ *  Output:
  *  -1  ERRORE: File inesistente
  *  -2  ERRORE: Input non validi
  *   0  ERRORE: Username inesistente
@@ -59,7 +60,8 @@ int auth_login (char *username, char *password, char *filename) {
     return resultCheck;
 }
 
-/*  Output:
+/*  Effettua il processo di registrazione.
+ *  Output:
  *  -1  ERRORE: File inesistente
  *  -2  ERRORE: Input non validi
  *   1  Registrazione avvenuta con successo
@@ -92,7 +94,8 @@ int auth_register (char *username, char *password, char *filename) {
     return 1;
 }
 
-/*  Output:
+/*  Controlla che non sia presente su file lo stesso username passato in ingresso.
+ *  Output:
  *  0  Username non trovato
  *  1  Username trovato con successo
  */
