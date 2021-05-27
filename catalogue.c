@@ -7,6 +7,7 @@
 #include "const.h"
 #include "logger.h"
 
+/*  Alloca dinamicamente un nuovo elemento Catalogue. */
 Catalogue catalogue_new(Item item){
     Catalogue tmp = NULL;
     tmp = (Catalogue) calloc (1, sizeof(catalogue));
@@ -17,12 +18,21 @@ Catalogue catalogue_new(Item item){
     return tmp;
 }
 
+/*  Aggiunge un elemento Catalogue in fondo alla lista.
+ *  Output:
+ *  Catalogue list: la lista correttamente modificata.
+ */
 Catalogue catalogue_tailInsert (Catalogue catalogue, Catalogue item) {
     if (catalogue == NULL) return item;
     catalogue->next = catalogue_tailInsert(catalogue->next, item);
     return catalogue;
 }
 
+/*  Crea una lista di elementi Catalogue leggendo il corrispettivo file.
+ *  Output:
+ *  NULL: errore (leggere log)
+ *  Catalogue list: file letto con successo
+ */
 Catalogue catalogue_retrieveListFromFile (char *filename) {
     // Sanity check on filename
     if (filename == NULL) {
@@ -58,6 +68,11 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
     return catalogue;
 }
 
+/*  Restituisce, se presente, un elemento Catalogue dalla lista.
+ *  Output:
+ *  NULL: elemento non trovato
+ *  Catalogue item: elemento trovato con successo
+ */
 Catalogue catalogue_findItem(Catalogue list, int itemCode)
 {
     if (list == NULL) return NULL;
@@ -65,6 +80,7 @@ Catalogue catalogue_findItem(Catalogue list, int itemCode)
     return catalogue_findItem(list->next, itemCode);
 }
 
+/*  Stampa su stdout una lista di elementi Catalogue. */
 void catalogue_print (Catalogue list){
     if (list != NULL) {
         item_print(list->item);
@@ -72,6 +88,7 @@ void catalogue_print (Catalogue list){
     }
 }
 
+/*  Dealloca un elemento Catalogue. */
 void catalogue_freeNode (Catalogue node) {
     if (node != NULL) {
         node->next = NULL;
@@ -82,6 +99,7 @@ void catalogue_freeNode (Catalogue node) {
     }
 }
 
+/*  Dealloca una lista di elementi Catalogue. */
 void catalogue_freeList (Catalogue list) {
     if (list != NULL) {
         catalogue_freeList(list->next);
