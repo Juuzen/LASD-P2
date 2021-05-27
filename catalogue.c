@@ -50,7 +50,12 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
     // Sanity check on fileopen
     if (catalogueFile == NULL) {
         logMessage(METHOD_CATALOGUE_RETRIEVE_LIST_FROM_FILE, LOG_LEVEL_ERROR, "Error opening product catalogue file");
-        return NULL;
+        catalogue_mockCatalogueFile();
+        catalogueFile = fopen(filename, "r");
+        if (catalogueFile == NULL) {
+            logMessage(METHOD_CATALOGUE_RETRIEVE_LIST_FROM_FILE, LOG_LEVEL_ERROR, "Error opening product catalogue file");
+            return NULL;
+        }
     }
 
     while (feof(catalogueFile) == 0)  {
@@ -86,6 +91,7 @@ Catalogue catalogue_findItem(Catalogue list, int itemCode)
 void catalogue_print (Catalogue list){
     if (list != NULL) {
         item_print(list->item);
+        printf("\n");
         catalogue_print(list->next);
     }
 }
@@ -133,9 +139,7 @@ void catalogue_mockCatalogueFile() {
     fprintf(catalogueFile, "%d\t%s\t%d\n", 104, "Vino", 8);
     fprintf(catalogueFile, "%d\t%s\t%d\n", 105, "Pane", 10);
     fprintf(catalogueFile, "%d\t%s\t%d\n", 106, "Patatine", 1);
-    fprintf(catalogueFile, "%d\t%s\t%d\n", 107, "Carne rossa", 5);
-    fprintf(catalogueFile, "%d\t%s\t%d\n", 108, "Carne bianca", 10);
-    fprintf(catalogueFile, "%d\t%s\t%d\n", 109, "Acqua", 12);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 107, "Acqua", 12);
 
     fclose(catalogueFile);
     return;

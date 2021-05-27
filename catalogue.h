@@ -21,5 +21,4 @@ void catalogue_freeList (Catalogue list);
 void catalogue_mockCatalogueFile();
 Item parseItemResilient(FILE *file);
 
-
 #endif //LASD_P2_PRODUCTCATALOGUE_H
