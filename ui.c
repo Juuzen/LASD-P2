@@ -91,7 +91,7 @@ void ui_authenticationMenu() {
             Driver driver;
             int driverCheck = driver_readInfo(driverCode, DRIVER_INFO_DB, &driver);
             if (driverCheck == 1) {
-                driver.truckLoad = NULL; //FIXME: Questa cosa deve andare all'inizializzazione del driver
+                driver.truckLoad = NULL;
                 ui_driverMenu(driver);
             }
             else {
@@ -127,7 +127,6 @@ void ui_authenticationMenu() {
             }
         }
 
-        //TODO: gestire getString in modo che questo passaggio sia ridondante ed è possibile rimuoverlo
         free(driverCode);
         free(driverPassword);
     } while (running);
@@ -233,7 +232,6 @@ void ui_registrationMenu() {
                 running = false;
         }
     
-        //TODO: Trovare un modo di gestire getString in modo da rendere superfluo questo passaggio e rimuoverlo
         free(driverCode);
         free(driverPassword);
     } while (running);
