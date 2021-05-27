@@ -1,11 +1,7 @@
-//
-// Created by backs on 20/05/2021.
-//
-
-#include "stdio.h"
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
 #include "logger.h"
-#include "time.h"
-#include "string.h"
 #include "const.h"
 
 /*
