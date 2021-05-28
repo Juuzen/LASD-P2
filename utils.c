@@ -46,7 +46,7 @@ void flushStdin() {
     while((c = getchar()) != '\n' && c != EOF);
 }
 
-/*  
+/*  Prende da stdin un valore intero compreso tra 0 e maxRange (se questo è specificato).
  *  Output codes: 
  *  -1: error in reading from input (bad input)
  *   0: out of bounds input
@@ -71,6 +71,10 @@ int getInt(int maxRange) {
     return input;
 }
 
+/*  Prende da stdin una stringa, compresa di whitespace. 
+ *  Output:
+ *  char *scan = la stringa correttamente letta in ingresso.
+ */
 char * getString(size_t maxChar) {
     int i = 0;
     char c;
