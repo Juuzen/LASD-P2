@@ -9,15 +9,15 @@
 /* ----- FUNZIONI GRAFI ----- */
 /* Alloca dinamicamente un grafo e lo restituisce in output */
 Graph graph_new() {
-    Graph graph = (Graph) calloc(1, sizeof(graph));
-    if (graph != NULL) {
-        graph->nodeCount = 0;
-        graph->adjList = (Edge *) calloc(1, NODELIMIT * sizeof(Edge));
+    Graph localGraph = (Graph) calloc(1, sizeof(graph));
+    if (localGraph != NULL) {
+        localGraph->nodeCount = 0;
+        localGraph->adjList = (Edge *) calloc(1, NODELIMIT * sizeof(Edge));
         for (int i = 0; i < NODELIMIT; i++) {
-            graph->adjList[i] = NULL;
+            localGraph->adjList[i] = NULL;
         }
     }
-    return graph;
+    return localGraph;
 }
 
 /* Dealloca un grafo passato */
