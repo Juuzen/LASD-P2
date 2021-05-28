@@ -6,42 +6,50 @@
 #include "ui.h"
 #include "graph.h"
 #include "const.h"
-#include "authlib.h"
+#include "auth.h"
 #include "driver.h"
-#include "productCatalogue.h"
-#include "orderManagement.h"
+#include "catalogue.h"
+#include "order.h"
 #include "utils.h"
+#include "logger.h"
 
 /* Entry point del progetto */
-void mainMenu() {
+void projectRun() {
+    // Mock del file del catalogo prodotti nel caso in cui non esista
+    //catalogue_mockCatalogueFile();
+
     int userChoice;
     bool running = true;
 
     do {
         clearScreen();
-        printf("Benvenuto, selezionare il servizio richiesto:\n");
-        printf("1. AUTENTICAZIONE\n");
-        printf("2. REGISTRAZIONE\n");
-        printf("3. USCITA DAL PROGRAMMA\n\n");
+        printTitle();
+        printf("Benvenuto su I-eats! La piattaforma di delivery piu' famosa di Island!\n");
+        printf("Prego, selezionare la propria opzione:\n");
+        printf("1. Autenticazione driver\n");
+        printf("2. Registrazione nuovo account driver\n");
+        printf("3. Uscita dal programma\n\n");
         printf("La tua scelta: ");
         userChoice = getInt(3);
 
         switch (userChoice) {
-        case 1: // autenticazione
-            authenticationMenu();
+        case 1: /* Autenticazione utente */
+            ui_authenticationMenu();
             break;
         
-        case 2: // registrazione
-            registrationMenu();
+        case 2: /* Registrazione nuovo utente */
+            ui_registrationMenu();
             break;
         
-        case 3: // uscita dal programma
-            printf("Ok ciao arrivederci\n"); //TODO: Abbellire il testo
+        case 3: /* Uscita dal programma*/
+            clearScreen();
+            printTitle();
+            printf("Arrivederci da I-eats! Buona giornata :)\n"); 
             running = false;
             break;
 
-        default: // errore
-            //TODO: chiamare logger
+        default: /* Caso di default (non dovrebbe mai essere eseguito, data la presenza di getInt */
+            logMessage(METHOD_PROJECT_RUN, LOG_LEVEL_ERROR, "Unreachable end");
             printf("Scelta non corretta! Riprovare\n");
             programPause();
         }
@@ -49,47 +57,78 @@ void mainMenu() {
     
 }
 
-/* Menu di autenticazione*/
-void authenticationMenu() {
-    int loginCheck, userChoice;
+/* Menu di autenticazione */
+void ui_authenticationMenu() {
+    int loginCheck, userChoice, length;
     bool running = true;
 
-    char username[MAX_SIZE_USERNAME];
-    char password[MAX_SIZE_PASSWORD];
+    char driverCode[MAX_SIZE_USERNAME];
+    char driverPassword[MAX_SIZE_PASSWORD];
     do {
-        clearScreen();
-        printf("Inserisci username:\n");
-        scanf("%s", username); //TODO: Input pulito
-        printf("\nInserisci password:\n");
-        scanf("%s", password); //TODO: Input pulito
+        do {
 
-        loginCheck = doLogin(username, password, DRIVER_LOGIN_DB);
+            clearScreen();
+            printTitle();
+            printf("Inserisci il tuo codice driver:\n");
+            scanf("%s", driverCode);
+            flushStdin();
+            length = strlen(driverCode);
+            if (length == 0) {
+                printf("L'username non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
+
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci la tua password:\n");
+            scanf("%s", driverPassword);
+            flushStdin();
+            length = strlen(driverPassword);
+            if (length == 0) {
+                printf("La password non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
+
+        loginCheck = auth_login(driverCode, driverPassword, DRIVER_LOGIN_DB);
 
         if (loginCheck == 1) {
             Driver driver;
-            int driverCheck = retrieveDriverInfoFromFile(username, DRIVER_INFO_DB, &driver);
+            int driverCheck = driver_readInfo(driverCode, DRIVER_INFO_DB, &driver);
             if (driverCheck == 1) {
-                driver.truckLoad = NULL; //FIXME: Questa cosa deve andare all'inizializzazione del driver
-                driverMenu(driver);
+                driver.truckLoad = NULL;
+                ui_driverMenu(driver);
             }
             else {
                 printf("Non e' stato possibile recuperare le informazioni del driver, riprovare piu' tardi...\n");
-                //TODO: Chiamare logger
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Error retrieving driver info");
                 
             }
             running = false; // Per evitare che venga ripetuta l'autenticazione dopo essere usciti
         } else { 
+            clearScreen();
+            printTitle();
             printf("Le credenziali sono errate! Seleziona una opzione:\n");
-            printf("1. RIPETERE L'AUTENTICAZIONE\n");
-            printf("2. TORNA INDIETRO\n\n");
-            printf("La tua scelta: ");
+            printf("1. Ripetere l'autenticazione\n");
+            printf("2. Torna indietro\n");
+            printf("\nLa tua scelta: ");
             userChoice = getInt(2);
             switch (userChoice){
             case 1: // Non è necessario fare nulla nel caso si voglia ripetere con l'autenticazione
                 break;
+
+            case 2:
+                running = false;
+                clearScreen();
+                printTitle();
+                printf("Arrivederci!\n");
+                programPause();
+                break;
             
             default:
-                //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Un-considered choice");
                 running = false;
                 break;
             }
@@ -98,35 +137,65 @@ void authenticationMenu() {
 }
 
 /* Menu di registrazione */
-void registrationMenu() {
-    int weight, registrationCheck, userChoice;
-    char username[MAX_SIZE_USERNAME];
-    char password[MAX_SIZE_PASSWORD];
+void ui_registrationMenu() {
+    int weight, registrationCheck, userChoice, length;
+    char driverCode[MAX_SIZE_USERNAME];
+    char driverPassword[MAX_SIZE_PASSWORD];
     bool running = true;
 
     do {
         clearScreen();
-        printf("Inserisci username:\n");
-        scanf("%s", username); // TODO: Input pulito
-        printf("Inserisci password:\n");
-        scanf("%s", password); // TODO: Input pulito
+        printTitle();
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci il tuo codice driver:\n");
+            scanf("%s", driverCode);
+            flushStdin();
+            length = strlen(driverCode);
+            if (length == 0) {
+                printf("L'username non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
 
-        registrationCheck = doRegistration(username, password, DRIVER_LOGIN_DB);
+        do {
+            clearScreen();
+            printTitle();
+            printf("Inserisci la tua password:\n");
+            scanf("%s", driverPassword);
+            flushStdin();
+            length = strlen(driverPassword);
+            if (length == 0) {
+                printf("La password non puo' essere una stringa vuota! Riprova.\n");
+                programPause();
+            }
+        } while (length == 0);
+
+        registrationCheck = auth_register(driverCode, driverPassword, DRIVER_LOGIN_DB);
         switch (registrationCheck) {
             case -2:
-                //TODO: Aggiungere logger
-                printf("L'username e' gia' presente nel sistema!\n");
+                clearScreen();
+                printTitle();
+                printf("Questo codice driver e' gia' presente nel sistema!\n");
                 printf("Selezionare una opzione:\n");
-                printf("1. RIPETERE LA REGISTRAZIONE\n");
-                printf("2. TORNA INDIETRO\n\n");
+                printf("1. Ripetere la registrazione con un nuovo codice driver\n");
+                printf("2. Torna indietro\n\n");
                 printf("La tua scelta: ");
                 userChoice = getInt(2);
                 switch (userChoice) {
-                case 1: // Non è necessario fare nulla nel caso si voglia ripetere con l'autenticazione
+                case 1: /* Non è necessario fare nulla nel caso si voglia ripetere l'autenticazione */
                     break;
+
+                    case 2:
+                        clearScreen();
+                        printTitle();
+                        printf("Arrivederci!\n");
+                        programPause();
+                        running = false;
                 
                 default:
-                    //FIXME: Fare distinguo tra caso 2 e caso di errore?
+                    logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Unattended case");
                     running = false;
                     break;
                 }
@@ -134,219 +203,266 @@ void registrationMenu() {
             
             // Problema di accesso ai file interni
             case -1:
-                //TODO: Aggiungere logger
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "Error during registration of driver");
+                clearScreen();
+                printTitle();
                 printf("Non e' possibile proseguire con la registrazione. Riprovare piu' tardi.\n");
-                running = false;
-                //TODO: Funzione di pausa
-                break;
-
-            // Registrazione avvenuta con successo, si procede con il salvataggio dei dati del driver
-            case 1:
-                printf("Inserisci il peso del tuo veicolo per le consegne:\n");
-                scanf("%d", &weight); //TODO: Input pulito
-
-                //TODO: Questa struct driver è un po' ridondante, rimuoverla?
-                Driver driver;
-                strcpy(driver.driverCode, username);
-                driver.truckWeight = weight;
-
-                writeDriverInfoToFile(driver, DRIVER_INFO_DB);
-                printf("Registrazione completata con successo! Ora puo' tornare al menu principale.\n");
                 programPause();
                 running = false;
                 break;
 
+            // Registrazione avvenuta con successo, si procede con il salvataggio dei dati del driver
+            case 1:
+                do {
+                    clearScreen();
+                    printTitle();
+                    printf("Inserisci il peso del tuo veicolo per le consegne (in kg):\n");
+                    weight = getInt(0);
+                    if (weight <= 0) {
+                        printf("Il peso del camion deve essere un valore positivo! Riprova.\n");
+                        programPause();
+                    }
+                } while (weight <= 0);
+
+                Driver driver;
+                strcpy(driver.driverCode, driverCode);
+                driver.truckWeight = weight;
+
+                driver_writeInfo(driver, DRIVER_INFO_DB);
+                printf("\nRegistrazione completata con successo! Ora puo' tornare al menu principale.\n");
+                running = false;
+                programPause();
+                break;
+
             default:
-            //The user shouldn't be here
-            //TODO: Chiamare logger
+                logMessage(METHOD_REGISTRATION_MENU, LOG_LEVEL_ERROR, "unreachable end");
+                printf("Vi e' stato un errore nella registrazione. Tornerai al menu principale.\n");
+                programPause();
                 running = false;
         }
     } while (running);
 }
 
 /* Menu personale del driver */
-void driverMenu(Driver driver) {
+void ui_driverMenu(Driver driver) {
     int userChoice;
     bool running = true; 
 
     do {
         clearScreen();
+        printTitle();
         printf("Benvenuto, driver %s!\n", driver.driverCode);
         printf("Seleziona il servizio che vuoi richiedere:\n");
-        printf("1. EFFETTUARE LA SPESA\n");
-        printf("2. EFFETTUARE UNA CONSEGNA\n");
-        printf("3. VISUALIZZA INFORMAZIONI CAMION\n");
-        printf("4. EFFETTUARE LOGOUT\n\n");
+        printf("1. Effettuare la spesa\n");
+        printf("2. Effettuare una consegna\n");
+        printf("3. Visualizza informazioni account\n");
+        printf("4. Effettuare la disconnessione\n\n");
         printf("La tua scelta: ");
         userChoice = getInt(4);
 
         switch (userChoice){
         case 1:
-            driverShopMenu(&driver);
+            ui_shopMenu(&driver);
             break;
         
         case 2:
-            driverDeliveryMenu(driver);
+            ui_deliveryMenu(driver);
             break;
         
         case 3:
-            printf("Funzione non ancora implementata!\n");
-            programPause();
+            ui_showDriverInfoMenu(driver);
             break;
 
         case 4:
             running = false;
-            printf("Grazie mille arrivederci\n"); //TODO: Abbellire il testo
+            clearScreen();
+            printTitle();
+            printf("Arrivederci, %s!\n", driver.driverCode);
             programPause();
             break;
 
         default:
-            printf("Scelta sbagliata! Riprovare\n"); //TODO: Abbellire il testo
+            printf("Vi e' stato un errore nella lettura dell'input, verrai disconnesso.\n");
+            logMessage(METHOD_DRIVER_MENU, LOG_LEVEL_ERROR, "Unreachable end");
+            running = false;
             programPause();
-            //TODO: chiamare logger, non si dovrebbe essere qui
         }
     } while (running);
 }
 
 /* Menu di gestione del carrello */
-void driverShopMenu(Driver* driver) {
+void ui_shopMenu(Driver* driver) {
     bool running = true;
     int userChoice = -1;
-
-    PtrCatalogue catalogue = retrieveItemsFromCatalogueFile(PRODUCT_CATALOGUE_DB);
-    PtrOrder cart = NULL; 
+    Catalogue catalogue = catalogue_retrieveListFromFile(PRODUCT_CATALOGUE_DB);
+    Order cart = NULL; 
     
     do {
         clearScreen();
+        printTitle();
         printf("Seleziona un'opzione:\n");
-        printf("1. AGGIUNGI UN PRODOTTO AL CARRELLO\n");
-        printf("2. VISUALIZZARE CARRELLO\n");
-        printf("3. RIMUOVERE UN PRODOTTO DAL CARRELLO\n"); // da fare?
-        printf("4. CONFERMARE L'ORDINE\n");
-        printf("5. ANNULLARE L'ORDINE\n");
-        printf("\n");
-        printf("La tua scelta: ");
+        printf("1. Aggiungere un prodotto al carrello\n");
+        printf("2. Rimuovere un prodotto dal carrello\n");
+        printf("3. Visualizzare il carrello attuale\n");
+        printf("4. Conferma l'ordine, e carica il carrello sul camion\n");
+        printf("5. Annulla l'ordine e torna indietro\n");
+        printf("\nLa tua scelta: ");
         userChoice = getInt(5);
 
         switch (userChoice) {
-            case 1: // aggiunta di un prodotto al carrello
-                do {
-                    //Racchiudere tutto in un unica funzione?
-                    cart = addToCart(cart, catalogue);
-
-                    printf("Articolo inserito! Seleziona un'opzione:\n");
-                    printf("1. AGGIUNGI UN NUOVO PRODOTTO\n");
-                    printf("2. TORNA INDIETRO\n\n");
-                    printf("La tua scelta: ");
-                    userChoice = getInt(2);
-                    switch (userChoice) {
-                    case 1:
-                        userChoice = -1; //FIXME: togliere questa istruzione tampone
-                        break;
-                    
-                    // non è necessario fare nulla per il caso 2
-                    default:
-                        break;
-                    }
-                } while (userChoice == -1);
+            case 1: /* Aggiunta di un prodotto al carrello */
+                cart = ui_addCartItemMenu(cart, catalogue);
                 break;
 
-            case 2: // stato del carrello
-                showCartInfo((*driver), cart);
-                programPause();
+            case 2: /* Rimozione di un prodotto dal carrello */
+                cart = ui_removeCartItemMenu(cart);
                 break;
 
-            case 3: // rimozione di un prodotto dal carrello
-                printf("Funzione non ancora implementata!\n");
-                programPause();
+            case 3: /* Visualizza lo stato del carrello */
+                ui_showCartInfoMenu((*driver), cart);
                 break;
 
-            case 4: //salvataggio ordine
-                (*driver).truckLoad = mergeLists((*driver).truckLoad, cart);
-                freeOrderList(cart);
-                printf("Carrello caricato con successo nel camion!\n");
+            case 4: /* Finalizzazione ordine, aggiunta al carico del camion */
+                if (cart != NULL) {
+                    (*driver).truckLoad = order_mergeLists((*driver).truckLoad, cart);
+                    printf("Carrello caricato con successo nel camion!\n");
+                }
+                else printf("Il carrello era vuoto, per cui non vi sono state modifiche al camion!\n");
                 programPause();
                 running = false;
                 break;
 
-            case 5: //annullamento ordine
-                freeOrderList(cart);
+            case 5: /* Annullamento ordine */
                 printf("Nessuna modifica e' stata effettuata!\n");
                 programPause();
                 running = false;
                 break;
 
-            default:
-                //TODO: chiamare logger
-                printf("Non e' possibile procedere alle operazioni del carrello, riprovare piu' tardi.\n");
-                programPause();
+            default: /* Errore */
+                logMessage(METHOD_DRIVER_SHOP_MENU, LOG_LEVEL_ERROR, "unreachable end");
+                printf("Errore nella gestione dell'input. Tornerai ora al menu precedente.\n");
                 running = false;
+                programPause();
         }
     } while (running);
+
+    /* Liberazione dell'heap */
+    catalogue_freeList(catalogue);
+    order_freeList(cart);
 }
 
-/* Funzione di supporto per aggiungere un prodotto al carrello */
-PtrOrder addToCart(PtrOrder cart, PtrCatalogue catalogue) {
-    int productCode;
-    int productQuantity;
-
-    PtrCatalogue catalogueItem = NULL;
-    PtrOrder orderItem = NULL;
-    bool itemFound = false;
+/* Menu di aggiunga elemento al carrello */
+Order ui_addCartItemMenu(Order cart, Catalogue catalogue) {
+    int userChoice;
+    bool running = true;
+    
     do {
-        clearScreen();
-        print(catalogue);
-        printf("Inserisci il codice del prodotto desiderato:\n");
-        productCode = getInt(0);
-        catalogueItem = findElement(catalogue, productCode);
-        if (catalogueItem == NULL) {
-            printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
-            programPause();            
+        cart = ui_addItemToCart(cart, catalogue);
+        printf("Articolo inserito! Seleziona un'opzione:\n");
+        printf("1. Aggiungi un nuovo prodotto al carrello\n");
+        printf("2. Torna indietro\n\n");
+        printf("La tua scelta: ");
+        userChoice = getInt(2);
+        switch (userChoice) {
+            case 1:
+                break;
+                
+            case 2:
+                running = false;
+                break;
+
+            default:
+                logMessage("addCartItemMenu()", LOG_LEVEL_ERROR, "unreachable end");
+                running = false;
+                break;
         }
-        
-        else itemFound = true;
-    } while (!itemFound);
+    } while (running);
 
-    do {
-        clearScreen();
-        printf("Inserisci la quantita':\n");
-        productQuantity = getInt(0);
-        if (productQuantity < 1) {
-            printf("La quantita' deve essere un numero positivo. Riprova!\n");
-            programPause();
-        } 
-    } while (productQuantity < 1);
-
-    orderItem = createNewOrder(catalogueItem->item, productQuantity);
-
-    cart = insertOrderMergeOrEnd(cart, orderItem);
     return cart;
 }
 
-/* Funzione di supporto per mostrare il carrello */
-void showCartInfo(Driver driver, PtrOrder cart) {
+/* Menu di rimozione elemento dal carrello */
+Order ui_removeCartItemMenu(Order cart) {
+    int userChoice;
+    bool running = true;
+    
+    do {
+        clearScreen();
+        printTitle();
+        if (cart == NULL) {
+            running = false;
+            printf("Il carrello e' vuoto! Non puoi rimuovere prodotti.\n");
+            programPause();
+        }
+
+        else {
+            cart = ui_removeItemFromCart(cart);
+
+            printf("Articolo rimosso! Seleziona un'opzione:\n");
+            printf("1. Rimuovi un altro prodotto\n");
+            printf("2. Torna indietro\n");
+            printf("\nLa tua scelta: ");
+            userChoice = getInt(2);
+
+            switch (userChoice) {
+                case 1: /* In questo caso non è necessario fare nulla */
+                    break;
+                        
+
+                case 2:
+                    running = false;
+                    break;
+
+                default:
+                    logMessage(METHOD_REMOVE_ITEM_FROM_CART, LOG_LEVEL_ERROR, "Unreachable switch case");
+                    running = false;
+                    break;
+            }
+        }
+    } while (running);
+
+    return cart;
+}
+
+/* Menu di visualizzazione informazioni carrello */
+void ui_showCartInfoMenu(Driver driver, Order cart) {
     clearScreen();
+    printTitle();
     printf("*** RIEPILOGO ORDINI ***\n");
     printf("Prodotti aggiunti al carrello:\n");
-    printOrderList(cart);
+    order_print(cart);
 
     if (driver.truckLoad != NULL) {
         printf("\nProdotti gia' caricati:\n");
-        printOrderList(driver.truckLoad);
+        order_print(driver.truckLoad);
     }
     printf("\n");
 
     printf("\n*** PESO TOTALE ORDINE ***\n\n");
 
-    int cartWeight = calculateOrderWeight(cart);
-    int truckWeight = getDriverTotalWeight(driver);
+    int cartWeight = order_getTotalWeight(cart);
+    int truckWeight = driver_getTotalWeight(driver);
     printf("Peso del carrello: %d\n", cartWeight);
     printf("Peso totale (provvisorio): %d\n", cartWeight + truckWeight); 
-    printf("Premere INVIO per tornare indietro.");
+    programPause();
+}
+
+/* Menu per mostrare le info attuali del driver */
+void ui_showDriverInfoMenu(Driver driver) {
+    clearScreen();
+    printTitle();
+    printf("Username driver: %s\n", driver.driverCode);
+    printf("Peso del camion: %d\n", driver.truckWeight);
+    if (driver.truckLoad != NULL) {
+        printf("Elementi caricati nel camion:\n");
+        order_print(driver.truckLoad);
+        printf("Peso totale del camion: %d\n", driver_getTotalWeight(driver));
+    }
+    programPause();
 }
 
 /* Menu di gestione delle consegne */
-void driverDeliveryMenu(Driver driver) {
+void ui_deliveryMenu(Driver driver) {
     int userChoice;
     bool running = true, scenarioChosen = false, repeating = true;
 
@@ -355,12 +471,13 @@ void driverDeliveryMenu(Driver driver) {
     Edge deliveryPath = NULL;
 
     do {
-        do {
+        while (!scenarioChosen) {
             clearScreen();
-            printf("Prego, seleziona uno scenario:\n");
+            printTitle();
+            printf("Seleziona uno scenario:\n");
             printf("1. Ponti resistenti, tutte le isole sono collegate tra di loro\n");
             printf("2. Tutte le isole sono collegate tra di loro, ma alcuni ponti sono instabili\n");
-            printf("3. Alcuni ponti sono instabili, non tutte le isole sono collegate tra di loro\n");
+            printf("3. Alcuni ponti sono instabili, e non tutte le isole sono collegate tra di loro\n");
             printf("\nLa tua scelta: ");
             userChoice = getInt(3);
 
@@ -382,14 +499,16 @@ void driverDeliveryMenu(Driver driver) {
                     break;
 
                 default:
+                    logMessage(METHOD_DRIVER_DELIVERY_MENU, LOG_LEVEL_ERROR, "Unreachable switch case");
                     printf("Scelta sbagliata! Riprovare.\n");
                     programPause();
             }
-        } while (!scenarioChosen);
+        }
 
+        clearScreen();
+        printTitle();
         /* Prendiamo l'input per l'isola di partenza */
         do {
-            clearScreen();
             printf("Seleziona l'isola di partenza (da 1 a %d): ", ISLAND_NUMBER);
             startIslandIndex = getInt(ISLAND_NUMBER);
             /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
@@ -401,9 +520,10 @@ void driverDeliveryMenu(Driver driver) {
         /* A questo punto decrementiamo startIslandIndex per poterlo utilizzare correttamente nell'algoritmo */
         startIslandIndex--;
 
+        clearScreen();
+        printTitle();
         /* Prendiamo l'input per l'isola di arrivo */
         do {
-            clearScreen();
             printf("Seleziona l'isola di arrivo (da 1 a %d): ", ISLAND_NUMBER);
             endIslandIndex = getInt(ISLAND_NUMBER);
             /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
@@ -416,7 +536,7 @@ void driverDeliveryMenu(Driver driver) {
         endIslandIndex--;
 
         /* Calcoliamo il peso totale del camion */
-        truckWeight = getDriverTotalWeight(driver);
+        truckWeight = driver_getTotalWeight(driver);
         
         /* Calcoliamo, se esiste, un percorso dall'isola di partenza all'isola di arrivo */
         deliveryPath = graph_findShortestPath(archipelago, startIslandIndex, endIslandIndex, truckWeight);
@@ -434,45 +554,124 @@ void driverDeliveryMenu(Driver driver) {
         /* A questo punto diamo la scelta all'utente se continuare o meno */
         do {
             clearScreen();
+            printTitle();
             printf("Prego, selezionare un'opzione:\n");
-            printf("1. CERCARE UN NUOVO PERCORSO DI CONSEGNA\n");
-            printf("2. CAMBIARE TIPOLOGIA DI SCENARIO\n");
-            printf("3. USCIRE DAL MENU DI CONSEGNA\n");
+            printf("1. Calcolare un nuovo percorso di consegna\n");
+            printf("2. Cambiare tipologia di scenario\n");
+            printf("3. Tornare al menu principale\n");
             printf("\nLa tua scelta: ");
             userChoice = getInt(3);
 
             switch (userChoice)
             {
-            case 1:
+            case 1: /* Verrà ripetuto il ciclo, escludendo la selezione dello scenario */
                 repeating = false;
+                scenarioChosen = true; 
+
+                /* Liberiamo la memoria heap */
                 edge_freeList(deliveryPath);
                 break;
             
-            case 2:
-                /* Il ciclo verrà ripetuto interamente, creando quindi un nuovo grafo */
-                scenarioChosen = false;
+            case 2: /* Verrà ripetuto il ciclo interamente */
                 repeating = false;
-                /* E' necessario quindi liberare lo heap dal grafo precedente */
+                scenarioChosen = false;
+                
+                /* Liberiamo la memoria heap */
                 graph_free(archipelago);
                 edge_freeList(deliveryPath);
                 break;
 
-            case 3: 
+            case 3: /* Il ciclo verrà interrotto */
                 repeating = false;
                 running = false;
+
+                /* Liberiamo la memoria heap */
                 graph_free(archipelago);
                 edge_freeList(deliveryPath);
+
                 printf("Ora tornerai al menu principale.\n");
                 programPause();
                 break;
 
             default:
+                logMessage(METHOD_DRIVER_DELIVERY_MENU, LOG_LEVEL_ERROR, "Unreachable switch case");
                 printf("Scelta non corretta! Riprovare.\n");
                 programPause();
                 break;
             }
         } while (repeating);
     } while (running);
+}
 
+/* Funzione di supporto per aggiungere un prodotto al carrello */
+Order ui_addItemToCart(Order cart, Catalogue catalogue) {
+    int itemCode;
+    int orderQuantity;
+
+    Catalogue catalogueItem = NULL;
+    Order orderItem = NULL;
+    bool itemFound = false;
+    do {
+        clearScreen();
+        printTitle();
+        printf("Gli elementi nel catalogo di questo periodo sono:\n");
+        catalogue_print(catalogue);
+        printf("Inserisci il codice del prodotto desiderato:\n");
+        itemCode = getInt(0);
+        catalogueItem = catalogue_findItem(catalogue, itemCode);
+        if (catalogueItem == NULL) {
+            printf("Il codice inserito non corrisponde a nessun prodotto in lista. Riprova!\n");
+            programPause();            
+        } else {
+            itemFound = true;
+            logMessage("ui.findItem()", LOG_LEVEL_DEBUG, "found item");
+        }
+    } while (!itemFound);
+
+
+    do {
+        printf("Inserisci la quantita' di prodotto da inserire nel carrello (max %d):\n", MAX_ORDER_QUANTITY);
+        orderQuantity = getInt(0);
+        if (orderQuantity < 1) {
+            printf("Spiacente, devi inserire un numero intero (compreso tra 0 e %d)! Riprova.\n", MAX_ORDER_QUANTITY);
+            programPause();
+        } 
+    } while (orderQuantity < 1);
     
+    if (orderQuantity > MAX_ORDER_QUANTITY) {
+        printf("E' stato inserita una quantita' maggiore di %d, pertanto l'inserimento verra' corretto automaticamente.\n", MAX_ORDER_QUANTITY);
+        orderQuantity = MAX_ORDER_QUANTITY;
+        programPause();
+    }
+    
+    orderItem = order_new(catalogueItem->item, orderQuantity);
+
+    cart = order_mergeInsert(cart, orderItem);
+    return cart;
+}
+
+/* Funzione di supporto per rimuovere un prodotto dal carrello */
+Order ui_removeItemFromCart(Order cart) {
+    if (cart != NULL) {
+        bool itemFound = false;
+        int userChoice;
+        do {
+            clearScreen();
+            printTitle();
+            printf("Il tuo carrello al momento contiene:\n");
+            order_print(cart);
+            printf("Inserisci il codice prodotto dell'elemento da rimuovere: ");
+            userChoice = getInt(0);
+
+            itemFound = order_findItem(cart, userChoice);
+            if (!itemFound) {
+                printf("Il codice inserito non corrisponde a nessun elemento nel carrello! Riprova.\n");
+                programPause();
+            }
+        } while (!itemFound);
+    
+        cart = order_removeItem(cart, userChoice);
+    }
+
+    return cart;
 }

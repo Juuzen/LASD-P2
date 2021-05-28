@@ -1,44 +1,40 @@
-//
-// Created by backs on 20/05/2021.
-//
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "stdio.h"
-#include "stdlib.h"
 #include "driver.h"
-#include "string.h"
 #include "logger.h"
 #include "const.h"
 
 
 
-/*
- * NOTE: Driver is not returned from function but instead is returned by reference in the input parameter
- *          Initialize it first or the function will CRASH!!!
+/*  Recupera le informazioni della struttura Driver da file, se presenti.
+ *  NOTA: la struttura Driver viene passata per riferimento, per cui la funzione necessita di una 
+ *  variabile correttamente inizializzata.
  *
- * Error codes:
- *      -100    DRIVER NOT INITIALIZED
- *      -2  Error in file opening
- *      -1  Input null
- *      0   Driver not registered
+ *  Output:
+ *  -100    ERRORE: variabile driver non inizializzata
+ *  -2      ERRORE: apertura file non corretta
+ *  -1      ERRORE: input non corretti
+ *  0       ERRORE: informazioni struttura Driver non presenti
+ *  1       Informazioni struttura Driver trovati ed assegnati con successo
  */
-int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver) {
+int driver_readInfo (char *driverCode, char *filename, Driver *driver) {
     if (driver == NULL) {
-        logMessage(METHOD_TEST, LOG_LEVEL_ERROR, "DRIVER NOT INITIALIZED", 1);
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error on driver - not initialized");
         return -100;
     }
 
     // Sanity check on input
     if (driverCode == NULL || filename == NULL) {
-        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
-        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - other inputs null\n");
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "r");
 
     if (driverDatabase == NULL) {
-        //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
-        fprintf(stderr, "ERROR - retrieveDriverInfoFromFile() - file opening null\n");
+        logMessage(METHOD_DRIVER_RETRIEVE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error in opening file");
         return -2;
     }
 
@@ -64,30 +60,30 @@ int retrieveDriverInfoFromFile(char *driverCode, char *filename, Driver *driver)
     return foundDriver;
 }
 
-/* Error codes:
- *      -2  Error in file opening
- *      -1  Filename null
- *       0  Error writing to file
- *       1  Success
+/*  Scrive su file le informazioni di una struttua Driver passata in input.
+ *  Output:
+ *  -2  ERRORE: apertura file non riuscita
+ *  -1  ERRORE: nome file non corretto
+ *   0  ERRORE: scrittura su file non riuscita
+ *   1  Scrittura su file completata con successo
  */
-int writeDriverInfoToFile(Driver driver, char *filename) {
+int driver_writeInfo (Driver driver, char *filename) {
     if (filename == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Filename is null", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Filename is null");
         return -1;
     }
 
     FILE *driverDatabase = fopen(filename, "a");
 
     if (driverDatabase == NULL) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error opening file", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error opening file");
         return -2;
     }
 
-    //FIXME: Qui veniva richiamato LOG_LEVEL_ERROR
     int printFileResult = fprintf(driverDatabase, "%s\t%d\n", driver.driverCode, driver.truckWeight);
 
     if (printFileResult < 0) {
-        logMessage(WRITE_DRIVER_FILE_METHOD, LOG_LEVEL_ERROR, "Error writing to file", 0);
+        logMessage(METHOD_DRIVER_WRITE_DRIVER_INFO, LOG_LEVEL_ERROR, "Error writing to file");
         return 0;
     }
 
@@ -96,7 +92,11 @@ int writeDriverInfoToFile(Driver driver, char *filename) {
     return 1;
 }
 
-int getDriverTotalWeight(Driver driver) {
+/*  Calcola il peso totale del camion più gli Item al suo interno.
+ *  Output:
+ *  int totalWeight: il peso totale correttamente calcolato.
+ */
+int driver_getTotalWeight(Driver driver) {
     if (driver.truckLoad == NULL) return driver.truckWeight;
-    else return driver.truckWeight + calculateOrderWeight(driver.truckLoad); 
+    else return driver.truckWeight + order_getTotalWeight(driver.truckLoad); 
 }

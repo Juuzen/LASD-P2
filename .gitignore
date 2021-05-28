@@ -2,15 +2,11 @@ CMakeLists.txt
 .idea
 .vscode
 cmake-build-debug
-<<<<<<< HEAD
 main
-
-=======
->>>>>>> graph
-main.c
-
 unit-test.c
-
 *.txt
-
 *.out
+
+lasdp.log
+
+*.isl

@@ -1,33 +1,33 @@
-//
-// Created by backs on 18/05/2021.
-//
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "driver.h"
-#include "authlib.h"
+#include "auth.h"
 #include "const.h"
+#include "logger.h"
 
 /*
- *  MAX_SIZE_USERNAME e MAX_SIZE_PASSWORD vengono usati + 1 per accomodare il carattere di terminazione '\0'
+ *  MAX_SIZE_USERNAME e MAX_SIZE_PASSWORD vengono usati + 1 
+ *  per accomodare il carattere di terminazione '\0'
  */
 
-/*
- * Error codes:
- *      -1  File inesistente
- *      -2  Input non validi
- *       0  Username inesistente
- *       1  Login successful
- *       2  Wrong password
+/*  Effettua il processo di accesso.
+ *  Output:
+ *  -1  ERRORE: File inesistente
+ *  -2  ERRORE: Input non validi
+ *   0  ERRORE: Username inesistente
+ *   1  Login avvenuto con 
+ *   2  ERRORE: Wrong password
  */
-
-int doLogin(char *username, char *password, char *filename) {
+int auth_login (char *username, char *password, char *filename) {
 
     FILE *loginFile = NULL;
     int resultCheck = 0;    //Stores result of check for login, base case for not found username
 
     // Sanity check su input passati alla funzione
     if (username == NULL || password == NULL || filename == NULL) {
+        logMessage(METHOD_AUTH_LOGIN, LOG_LEVEL_ERROR, "Error in input variables");
         return -2;
     }
 
@@ -35,6 +35,7 @@ int doLogin(char *username, char *password, char *filename) {
 
     // Sanity check sull'apertura del file
     if (loginFile == NULL) {
+        logMessage(METHOD_AUTH_LOGIN, LOG_LEVEL_ERROR, "Error opening file");
         return -1;
     }
 
@@ -59,18 +60,20 @@ int doLogin(char *username, char *password, char *filename) {
     return resultCheck;
 }
 
-/*
- * Error codes:
- *      -1  File inesistente
- *      -2  Input non validi
- *       1  Registrazione successful
+/*  Effettua il processo di registrazione.
+ *  Output:
+ *  -1  ERRORE: File inesistente
+ *  -2  ERRORE: Input non validi
+ *   1  Registrazione avvenuta con successo
  */
-int doRegistration(char *username, char *password, char *filename) {
+int auth_register (char *username, char *password, char *filename) {
     if (username == NULL || password == NULL || filename == NULL) {
+        logMessage(METHOD_AUTH_REGISTRATION, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
-    if (checkIfUsernameAlreadyExists(username, filename) == 1) {
+    if (auth_checkExistingUsername(username, filename) == 1) {
+        logMessage(METHOD_AUTH_REGISTRATION, LOG_LEVEL_INFO, "Username already exists");
         return -2;
     }
 
@@ -80,6 +83,7 @@ int doRegistration(char *username, char *password, char *filename) {
 
     // Sanity check su file nullo
     if (registrationFile == NULL) {
+        logMessage(METHOD_AUTH_REGISTRATION, LOG_LEVEL_ERROR, "Error opening auth file");
         return -1;
     }
 
@@ -90,18 +94,24 @@ int doRegistration(char *username, char *password, char *filename) {
     return 1;
 }
 
-//  Returns 1 if username already exists, 0 otherwise
-int checkIfUsernameAlreadyExists(char *username, char *filename) {
+/*  Controlla che non sia presente su file lo stesso username passato in ingresso.
+ *  Output:
+ *  0  Username non trovato
+ *  1  Username trovato con successo
+ */
+int auth_checkExistingUsername (char *username, char *filename) {
 
     FILE *registrationFile = NULL;
 
     if (filename == NULL || username == NULL) {
+        logMessage(METHOD_AUTH_CHECK_USERNAME, LOG_LEVEL_ERROR, "Error in input variables");
         return -1;
     }
 
     registrationFile = fopen(filename, "r");
 
     if (registrationFile == NULL) {
+        logMessage(METHOD_AUTH_CHECK_USERNAME, LOG_LEVEL_ERROR, "Error opening file");
         return -1;
     }
 
