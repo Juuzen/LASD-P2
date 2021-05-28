@@ -4,14 +4,18 @@
 #include "item.h"
 #include "logger.h"
 
+/*  Crea un elemento Item con i parametri in ingresso, e la restituisce. 
+ *  Output:
+ *  Item newItem = la variabile correttamente inizializzata.
+ */
 Item item_new (char *itemLabel, int itemWeight, int itemCode) {
-    Item item;
+    Item newItem;
     logMessage("item_new()", LOG_LEVEL_DEBUG, "Copying string");
-    strcpy(item.label, itemLabel);
+    strcpy(newItem.label, itemLabel);
     logMessage("item_new()", LOG_LEVEL_DEBUG, "string copied");
-    item.weight = itemWeight;
-    item.code = itemCode;
-    return item;
+    newItem.weight = itemWeight;
+    newItem.code = itemCode;
+    return newItem;
 }
 
 /*  Fetcha un singolo item dal file catalogo passato in input
@@ -40,6 +44,7 @@ Item item_fetchSingleItemFromFile(FILE *file) {
     return item;
 }
 
+/* Stampa su stdout un elemento Item*/
 void item_print(Item item) {
     printf("Nome prodotto: %s\n", item.label);
     printf("Codice prodotto: %d\n", item.code);
