@@ -59,15 +59,19 @@ Catalogue catalogue_retrieveListFromFile (char *filename) {
     }
 
     while (feof(catalogueFile) == 0)  {
-        char localProductLabel[MAX_ITEM_LABEL_SIZE];
-        int localSpecificWeight, localProductCode;
-        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, localProductLabel, &localSpecificWeight);
-
-        if (scannedElements == 3) {
-            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
-            Catalogue item = catalogue_new(genericItem);
-            catalogue = catalogue_tailInsert(catalogue, item);
-        }
+        Item genericItem = item_fetchSingleItemFromFile(catalogueFile);
+        Catalogue item = catalogue_new(genericItem);
+        catalogue = catalogue_tailInsert(catalogue, item);
+        //  Lascio commentata e non elimino per storico e debug
+//        char localProductLabel[MAX_ITEM_LABEL_SIZE];
+//        int localSpecificWeight, localProductCode;
+//        int scannedElements = fscanf(catalogueFile, "%d\t%s\t%d\n", &localProductCode, localProductLabel, &localSpecificWeight);
+//
+//        if (scannedElements == 3) {
+//            Item genericItem = item_new(localProductLabel, localSpecificWeight, localProductCode);
+//            Catalogue item = catalogue_new(genericItem);
+//            catalogue = catalogue_tailInsert(catalogue, item);
+//        }
     }
     fclose(catalogueFile);
 
@@ -140,29 +144,8 @@ void catalogue_mockCatalogueFile() {
     fprintf(catalogueFile, "%d\t%s\t%d\n", 105, "Pane", 10);
     fprintf(catalogueFile, "%d\t%s\t%d\n", 106, "Patatine", 1);
     fprintf(catalogueFile, "%d\t%s\t%d\n", 107, "Acqua", 12);
+    fprintf(catalogueFile, "%d\t%s\t%d\n", 108, "Carne rossa", 1);
 
     fclose(catalogueFile);
     return;
-}
-
-Item parseItemResilient(FILE *inputFile) {
-    char c;
-    int index = 0;
-    char parsedString[MAX_ITEM_LABEL_SIZE];
-    int productCode;
-    int weight;
-
-    fscanf(inputFile, "%d\t", &productCode);
-
-    while (c != '\t') {
-        c = getc(inputFile);
-        parsedString[index] = c;
-        index++;
-    }
-
-    parsedString[index++] = '\0';
-    fscanf(inputFile, "%d\n", &weight);
-    Item item = item_new(parsedString, weight, productCode);
-
-    return item;
 }

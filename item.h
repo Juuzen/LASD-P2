@@ -9,6 +9,7 @@ typedef struct Item {
 } Item;
 
 Item item_new(char *label, int specificWeight, int codProduct);
+Item item_fetchSingleItemFromFile(FILE *file);
 void item_print(Item item);
 
 #endif
