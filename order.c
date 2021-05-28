@@ -79,15 +79,12 @@ Order order_mergeLists (Order primaryList, Order secondaryList) {
     /* Fintanto che secondaryList non è vuota */
     while (secondaryList != NULL) {
         /* Creo un duplicato del nodo corrente di secondaryList */
-        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "creating duplicate");
         tmpOrder = order_new(secondaryList->item, secondaryList->quantity);
 
         /* Inserisco tale duplicato in primaryList */
-        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "inserting duplicate");
         primaryList = order_mergeInsert(primaryList, tmpOrder);
 
         /* Procedo col prossimo elemento di secondaryList */
-        logMessage("mergeLists()", LOG_LEVEL_DEBUG, "going further");
         secondaryList = secondaryList->next;
     }
 
@@ -102,11 +99,15 @@ Order order_mergeLists (Order primaryList, Order secondaryList) {
 Order order_mergeInsert (Order list, Order order) {
     if (list == NULL) return order;
     if (list->item.code == order->item.code) {
-        list->quantity += order->quantity;
+        if ((list->quantity + order->quantity) > MAX_ORDER_QUANTITY)
+            list->quantity = MAX_ORDER_QUANTITY;
+        else list->quantity += order->quantity;
+
         /* Questo elemento può essere eliminato dal momento il suo contenuto viene incluso nella lista */
-        //order_freeNode(order);
+        order_freeNode(order);
         return list;
     }
+    
     list->next = order_mergeInsert (list->next, order);
     return list;
 }

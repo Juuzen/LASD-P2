@@ -1,7 +1,10 @@
 #ifndef const_h
 #define const_h
 
-/* Used in: productCatalogue.c */
+/* Used in: order.c */
+#define MAX_ORDER_QUANTITY 1000
+
+/* Used in: catalogue.c */
 #define MAX_ITEM_LABEL_SIZE 21
 #define METHOD_CATALOGUE_RETRIEVE_LIST_FROM_FILE "catalogue_retrieveListFromFile()"
 #define METHOD_CATALOGUE_MOCK_FILE "catalogue_mockCatalogueFile()"
@@ -36,13 +39,12 @@
 #define METHOD_DRIVER_SHOP_MENU "driverShopMenu()"
 #define METHOD_DRIVER_DELIVERY_MENU "driverDeliveryMenu()"
 #define METHOD_REMOVE_ITEM_FROM_CART "removeItemFromCart()"
-#define METHOD_ "addItemToCart()"
-
-/* Used in: project.c */
+#define METHOD_ADD_ITEM_TO_CART "addItemToCart()"
+#define CLEAR_SCREEN_METHOD "clearScreen()"
 #define DRIVER_INFO_DB "driver-info.isl"
 #define DRIVER_LOGIN_DB "driver-auth-info.isl"
 #define PRODUCT_CATALOGUE_DB "items-catalogue.isl"
 
-#define CLEAR_SCREEN_METHOD "clearScreen()"
+
 
 #endif 

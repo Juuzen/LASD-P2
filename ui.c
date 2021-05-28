@@ -630,14 +630,20 @@ Order ui_addItemToCart(Order cart, Catalogue catalogue) {
 
 
     do {
-        printf("Inserisci la quantita' di prodotto da inserire nel carrello:\n");
+        printf("Inserisci la quantita' di prodotto da inserire nel carrello (max %d):\n", MAX_ORDER_QUANTITY);
         orderQuantity = getInt(0);
         if (orderQuantity < 1) {
-            printf("La quantita' deve essere un numero positivo. Riprova!\n");
+            printf("Spiacente, devi inserire un numero intero (compreso tra 0 e %d)! Riprova.\n", MAX_ORDER_QUANTITY);
             programPause();
         } 
     } while (orderQuantity < 1);
-
+    
+    if (orderQuantity > MAX_ORDER_QUANTITY) {
+        printf("E' stato inserita una quantita' maggiore di %d, pertanto l'inserimento verra' corretto automaticamente.\n", MAX_ORDER_QUANTITY);
+        orderQuantity = MAX_ORDER_QUANTITY;
+        programPause();
+    }
+    
     orderItem = order_new(catalogueItem->item, orderQuantity);
 
     cart = order_mergeInsert(cart, orderItem);
