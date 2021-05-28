@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "const.h"
 
+/* Stampa su stdout il banner della società. */
 void printTitle() {
     printf("::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
     printf("'####::::::::::'########::::'###::::'########::'######::\n");
@@ -18,11 +19,13 @@ void printTitle() {
     printf("\n\n");
 }
 
+/* Mette in pausa l'input, riprende premendo il tasto INVIO. */
 void programPause() {
     printf("Premi INVIO per continuare...");
     getchar();
 }
 
+/* Pulisce la finestra del terminale (con funzioni OS-based). */
 void clearScreen() {
     #ifdef _WIN32
     /* Istruzioni per sistema operativo Windows */
@@ -37,12 +40,14 @@ void clearScreen() {
     #endif
 }
 
+/* Svuota lo stdin. */
 void flushStdin() {
     int c;
     while((c = getchar()) != '\n' && c != EOF);
 }
 
-/* Output codes: 
+/*  
+ *  Output codes: 
  *  -1: error in reading from input (bad input)
  *   0: out of bounds input
  *  1+: input read successfully (range (0; maxRange])
