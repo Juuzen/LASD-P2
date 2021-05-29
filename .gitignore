@@ -10,3 +10,5 @@ unit-test.c
 lasdp.log
 
 *.isl
+
+cmake-build-wsl_profile/
