@@ -14,6 +14,6 @@ void edge_freeList(Edge list);
 Edge edge_newNode(int source, int dest, int weight);
 Edge edge_headInsert(Edge list, int source, int dest, int weight);
 Edge edge_tailInsert(Edge list, int source, int dest, int weight);
-void edge_printPath(Edge list, int offset);
+void edge_printPath(Edge list);
 
 #endif

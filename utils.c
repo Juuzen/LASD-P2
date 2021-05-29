@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <ctype.h>
 
 #include "utils.h"
 #include "logger.h"
@@ -86,4 +88,32 @@ char * getString(size_t maxChar) {
     //flushStdin();
     return scan;
 
+}
+
+char getChar(bool *correct) {
+    (*correct) = false;
+    char letter, maxRange = intToChar(ISLAND_NUMBER - 1);
+    int scanCheck = scanf("%c", &letter);
+    flushStdin();
+
+    if (scanCheck < 1) return letter;
+    
+    letter = toupper(letter);
+    
+    if (letter >= 'A' && letter <= maxRange) (*correct) = true;
+
+    return letter;
+}
+
+char intToChar (int number) {
+    number += 65;
+    char letter = number;
+    return letter;
+}
+
+int charToInt (char letter) {
+    letter = toupper(letter);
+    int number = letter;
+    number -= 65;
+    return number;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "utils.h"
 #include "edge.h"
 
 /* Dealloca un elemento Edge */
@@ -58,19 +59,19 @@ Edge edge_headInsert(Edge list, int source, int dest, int weight) {
     return E;
 }
 
-/* Stampa su stdout una lista di elementi di Edge */
-void edge_printPath(Edge list, int offset) {
+/* Stampa su stdout una lista di elementi di Edge (come caratteri) */
+void edge_printPath(Edge list) {
     if (list == NULL) {
         printf("///\n");
         return;
     }
 
     if (list->next != NULL) {
-        printf("%d -> ", list->sourceIndex + offset);
-        edge_printPath(list->next, offset);
+        printf("%c -> ", intToChar(list->sourceIndex));
+        edge_printPath(list->next);
         return;
     }
 
-    printf("%d -> %d\n", list->sourceIndex + offset, list->destIndex + offset);
-}
+    printf("%c -> %c\n", intToChar(list->sourceIndex), intToChar(list->destIndex));
 
+}

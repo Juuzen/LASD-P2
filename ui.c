@@ -464,8 +464,8 @@ void ui_showDriverInfoMenu(Driver driver) {
 /* Menu di gestione delle consegne */
 void ui_deliveryMenu(Driver driver) {
     int userChoice;
-    bool running = true, scenarioChosen = false, repeating = true;
-
+    bool running = true, scenarioChosen = false, repeating = true, correctInput = false;
+    char startIslandLetter, endIslandLetter;
     int startIslandIndex, endIslandIndex, truckWeight;
     Graph archipelago = NULL;
     Edge deliveryPath = NULL;
@@ -509,31 +509,31 @@ void ui_deliveryMenu(Driver driver) {
         printTitle();
         /* Prendiamo l'input per l'isola di partenza */
         do {
-            printf("Seleziona l'isola di partenza (da 1 a %d): ", ISLAND_NUMBER);
-            startIslandIndex = getInt(ISLAND_NUMBER);
-            /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
-            if (startIslandIndex <= 0) {
+            printf("Seleziona l'isola di partenza, da A a %c (case insensitive): ", intToChar(ISLAND_NUMBER - 1));
+            startIslandLetter = getChar(&correctInput);
+            if (!correctInput) {
                 printf("Scelta non corretta! Riprovare.\n");
                 programPause();
             }
-        } while (startIslandIndex <= 0);
-        /* A questo punto decrementiamo startIslandIndex per poterlo utilizzare correttamente nell'algoritmo */
-        startIslandIndex--;
+        } while (!correctInput);
+        /* A questo punto convertiamo il carattere in numero, per poterlo utilizzare nell'algoritmo */
+        startIslandIndex = charToInt(startIslandLetter);
+        /* Re-impostiamo correctInput a false per poter leggere il secondo input */
+        correctInput = false;
 
         clearScreen();
         printTitle();
         /* Prendiamo l'input per l'isola di arrivo */
         do {
-            printf("Seleziona l'isola di arrivo (da 1 a %d): ", ISLAND_NUMBER);
-            endIslandIndex = getInt(ISLAND_NUMBER);
-            /* getInt restituisce -1 / 0 se l'input inserito non è corretto */
-            if (endIslandIndex <= 0) {
+            printf("Seleziona l'isola di arrivo, da A a %c (case insensitive): ", intToChar(ISLAND_NUMBER - 1));
+            endIslandLetter = getChar(&correctInput);
+            if (!correctInput) {
                 printf("Scelta non corretta! Riprovare.\n");
                 programPause();
             }
-        } while (endIslandIndex <= 0);
-        /* A questo punto decrementiamo endIslandIndex per poterlo utilizzare correttamente nell'algoritmo */
-        endIslandIndex--;
+        } while (!correctInput);
+        /* A questo punto convertiamo il carattere in numero, per poterlo utilizzare nell'algoritmo */
+        endIslandIndex = charToInt(endIslandLetter);
 
         /* Calcoliamo il peso totale del camion */
         truckWeight = driver_getTotalWeight(driver);
@@ -546,8 +546,8 @@ void ui_deliveryMenu(Driver driver) {
             programPause();
         }
         else {
-            printf("Per arrivare da %d a %d, puoi effettuare questo percorso:\n", startIslandIndex+1, endIslandIndex+1);
-            edge_printPath(deliveryPath, 1);
+            printf("Per arrivare da %c a %c, puoi effettuare questo percorso:\n", intToChar(startIslandIndex), intToChar(endIslandIndex));
+            edge_printPath(deliveryPath);
             programPause();
         }
 
