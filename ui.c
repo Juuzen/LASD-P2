@@ -507,6 +507,7 @@ void ui_deliveryMenu(Driver driver) {
 
         clearScreen();
         printTitle();
+        correctInput = false;
         /* Prendiamo l'input per l'isola di partenza */
         do {
             printf("Seleziona l'isola di partenza, da A a %c (case insensitive): ", intToChar(ISLAND_NUMBER - 1));
@@ -518,11 +519,11 @@ void ui_deliveryMenu(Driver driver) {
         } while (!correctInput);
         /* A questo punto convertiamo il carattere in numero, per poterlo utilizzare nell'algoritmo */
         startIslandIndex = charToInt(startIslandLetter);
-        /* Re-impostiamo correctInput a false per poter leggere il secondo input */
-        correctInput = false;
+        
 
         clearScreen();
         printTitle();
+        correctInput = false;
         /* Prendiamo l'input per l'isola di arrivo */
         do {
             printf("Seleziona l'isola di arrivo, da A a %c (case insensitive): ", intToChar(ISLAND_NUMBER - 1));
@@ -542,11 +543,11 @@ void ui_deliveryMenu(Driver driver) {
         deliveryPath = graph_findShortestPath(archipelago, startIslandIndex, endIslandIndex, truckWeight);
 
         if (deliveryPath == NULL) {
-            printf("Mi dispiace, non esiste un percorso che vada da %d a %d.\n", startIslandIndex+1, endIslandIndex+1);
+            printf("Mi dispiace, non esiste un percorso che vada da %c a %c.\n", startIslandLetter, endIslandLetter);
             programPause();
         }
         else {
-            printf("Per arrivare da %c a %c, puoi effettuare questo percorso:\n", intToChar(startIslandIndex), intToChar(endIslandIndex));
+            printf("Per arrivare da %c a %c, puoi effettuare questo percorso:\n", startIslandLetter, endIslandLetter);
             edge_printPath(deliveryPath);
             programPause();
         }
