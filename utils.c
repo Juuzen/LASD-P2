@@ -77,7 +77,7 @@ int getInt(int maxRange) {
  *  Output:
  *  char *scan = la stringa correttamente letta in ingresso.
  */
-char * getString(size_t maxChar) {
+char* getString(size_t maxChar) {
     int i = 0;
     char c;
     char * scan = (char *) malloc(maxChar * sizeof(char));
@@ -90,9 +90,14 @@ char * getString(size_t maxChar) {
 
 }
 
+/* Prende da stdin un carattere, e se rientra nel range A-* (definito nella funzione)
+   Allora imposta correct = true */
 char getChar(bool *correct) {
+    /* Supponiamo correct falso a meno di input corretto */
     (*correct) = false;
-    char letter, maxRange = intToChar(ISLAND_NUMBER - 1);
+    char letter;
+    /* Definiamo maxRange come la lettera corrispondente all'ultima isola */
+    char maxRange = intToChar(ISLAND_NUMBER - 1);
     int scanCheck = scanf("%c", &letter);
     flushStdin();
 
@@ -105,12 +110,16 @@ char getChar(bool *correct) {
     return letter;
 }
 
+/* Effettua un cast da intero a char, restituendo la lettera corrispondente (maiuscola)
+   All'interno dell'alfabeto */
 char intToChar (int number) {
     number += 65;
     char letter = number;
     return letter;
 }
 
+/* Effettua un cast da char a int, restituendo l'intero corrispondente
+   Alla lettera (maiuscola) passata in input */
 int charToInt (char letter) {
     letter = toupper(letter);
     int number = letter;
